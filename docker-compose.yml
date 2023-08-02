@@ -1,0 +1,63 @@
+version: '3.5'
+services:
+  app-server:
+    container_name: sgr-service-host
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    image: renandpf/sgr-service:1.0.2
+    ports:
+      - "8083:8083"
+    networks:
+      - sgr_network
+    environment:
+      DB_HOST: sgr-database-host
+      DB_USERNAME: root
+      DB_PASSWORD: senha
+      DB_PORT: 3306
+      DB_SCHEMA: sgr_database
+    depends_on:
+      database-server:
+        condition: service_healthy
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    restart: always
+    expose:
+      - "8083"
+  database-server:
+    container_name: sgr-database-host
+    image: mysql:8.0.33
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_DATABASE: sgr_database
+      MYSQL_TCP_PORT: 3306
+    networks:
+      - sgr_network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'sgr-database-host',
+          '--user=root',
+          '--password=senha'
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+networks:
+  sgr_network:
+    driver: bridge

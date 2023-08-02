@@ -1,0 +1,12 @@
+{
+  "directory": [
+    "./src/gerencial", 
+    "./src/pedido",
+    "./src/pagamento"],
+  "exclude": [
+    "__mock__",
+    "__mocks__",
+    ".spec.ts"
+  ],
+  "delete": true
+}
