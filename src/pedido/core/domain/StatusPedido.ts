@@ -1,7 +1,6 @@
 export enum StatusPedido {
     RECEBIDO,
     AGUARDANDO_CONFIRMACAO_PAGAMENTO,
-    PAGO,
     EM_PREPARACAO,
     PRONTO,
     FINALIZADO,
