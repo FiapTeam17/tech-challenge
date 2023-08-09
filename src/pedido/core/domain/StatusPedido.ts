@@ -5,5 +5,4 @@ export enum StatusPedido {
     EM_PREPARACAO,
     PRONTO,
     FINALIZADO,
-    PAGAMENTO_INVALIDO,
 }
