@@ -96,24 +96,17 @@ export class Pedido {
         return pedido;
     }
 
-    temCliente(): boolean {
-        return this._cliente !== undefined;
-    }
-
-    //TODO: Aplicar SOLID: este método tende a crescer sempre q surgir novos status. 
-    //Por isso é sugerido que ele deve ser substituido por classe "Status", sendo que cada uma responde pela alteração de status
-    //Assim Da pra usar chain of responsabilit ou factory - analisar
     setStatus(newStatus: StatusPedido) {
         switch (newStatus) {
-            case StatusPedido.RECEBIDO:
-                if (this._status === undefined || this._status === StatusPedido.RECEBIDO) {
+            case StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO:
+                if (this._status === undefined || this._status === StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO) {
                     this._status = newStatus;
                     return;
                 }
                 throw new AlteracaoStatusPedidoException("O status do pedido não permite essa alteração");
 
-            case StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO:
-                if (this._status === StatusPedido.RECEBIDO) {
+            case StatusPedido.RECEBIDO:
+                if (this._status === StatusPedido.PAGO) {
                     this._status = newStatus;
                     break;
                 }
@@ -127,7 +120,7 @@ export class Pedido {
                 throw new AlteracaoStatusPedidoException("O status do pedido não permite essa alteração");
 
             case StatusPedido.EM_PREPARACAO:
-                if (this._status === StatusPedido.PAGO) {
+                if (this._status === StatusPedido.RECEBIDO) {
                     this._status = newStatus;
                     break;
                 }

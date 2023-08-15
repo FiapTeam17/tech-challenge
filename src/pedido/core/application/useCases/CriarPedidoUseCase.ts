@@ -30,7 +30,7 @@ export class CriarPedidoUseCase implements ICriarPedidoUseCase {
     await this.verificaExistenciaProduto(pedido);
 
     pedido.dataCadastro = new Date(Date.now());
-    pedido.setStatus(StatusPedido.RECEBIDO);
+    pedido.setStatus(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO);
 
     const id = await this.pedidoRepositoryGateway.criar(pedido.toPedidoDto());
     if (id !== undefined) {
