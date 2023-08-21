@@ -63,11 +63,12 @@ export class PedidoMySqlRepositoryGateway implements IPedidoRepositoryGateway {
             this.logger.trace("Start pedido={}", pedido);
             const pedidoId = pedido.id as number;
             await this.pedidoRepository.update(pedidoId, {
-                statusId: StatusPedidoEnumMapper.enumParaNumber(pedido.status)
+                status: StatusPedidoEnumMapper.enumParaString(pedido.status)
             });
             this.logger.trace("End");
         }
         catch (e) {
+
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
@@ -96,15 +97,14 @@ export class PedidoMySqlRepositoryGateway implements IPedidoRepositoryGateway {
 
     async obterEmAndamento(): Promise<Optional<PedidoDto[]>> {
         try {
-            this.logger.trace("Start em amdamento");
+            this.logger.trace("Start em andamento");
             const pedidos: PedidoDto[] = [];
 
             const pedidoEntity = await this.pedidoRepository
                 .createQueryBuilder("ped")
-                .where("ped.statusId in(:...status)", {
+                .where("ped.status in(:...status)", {
                     status: [
-                        StatusPedidoEnumMapper.enumParaNumber(StatusPedido.PAGO),
-                        StatusPedidoEnumMapper.enumParaNumber(StatusPedido.EM_PREPARACAO)
+                        StatusPedidoEnumMapper.enumParaString(StatusPedido.EM_PREPARACAO)
                     ]
                 })
                 .getMany();
@@ -153,8 +153,8 @@ export class PedidoMySqlRepositoryGateway implements IPedidoRepositoryGateway {
 
             const pedidoEntity = await this.pedidoRepository
                 .createQueryBuilder("ped")
-                .where("ped.statusId = :status", {
-                    status: StatusPedidoEnumMapper.enumParaNumber(status)
+                .where("ped.status = :status", {
+                    status: StatusPedidoEnumMapper.enumParaString(status)
                 }).getMany();
 
             pedidoEntity.forEach(pe => {

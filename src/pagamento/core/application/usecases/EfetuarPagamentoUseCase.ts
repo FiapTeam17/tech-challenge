@@ -2,7 +2,7 @@ import { Inject, Logger } from "@tsed/common";
 import { Injectable, ProviderScope, ProviderType } from "@tsed/di";
 import { IPagamentoExternoServiceGateway, IPagamentoRepositoryGateway, IPedidoServiceGateway } from "../ports";
 import { PedidoNotFoundException } from "../exceptions/PedidoNotFoundException";
-import { Pedido, StatusPedido } from "../../../../pedido";
+import { Pedido, StatusPedido, StatusPedidoEnumMapper } from "../../../../pedido";
 import { CamposObrigatoriosNaoPreechidoException } from "../exceptions/CamposObrigatoriosNaoPreechidoException";
 import { IEfetuarPagamentoUseCase } from "./IEfetuarPagamentoUseCase";
 import { PedidoServiceHttpGateway } from "../../../adapter/driven/http/PedidoServiceHttpGateway";
@@ -36,7 +36,7 @@ export class EfetuarPagamentoUseCase implements IEfetuarPagamentoUseCase {
 
         const pedidoDto = await this.obtemPedidoVerificandoSeEleExiste(dto.pagamento);
         
-        const pedido = Pedido.getInstancia(pedidoDto.id, pedidoDto.statusId);
+        const pedido = Pedido.getInstancia(pedidoDto.id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status));
         pedido.setStatus(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO);
 
         const responsePagamentoDto = await this.pagamentoExternoServiceGateway.enviarPagamento(new RequestPagamentoDto(dto.pagamento.cartoesCredito));

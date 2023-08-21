@@ -19,11 +19,11 @@ describe("Testes de Confirmar Pagamento - Usecase", () => {
     const statusPagamento = "any-bbb";
 
     const mockedPedidoServiceGateway = mock<IPedidoServiceGateway>();
-    const pedidoDto = new PedidoDto(1, 1);//Any pedido com status igual a "AGUARDANDO_CONFIRMACAO_PAGAMENTO"
+    const pedidoDto = new PedidoDto(1, "EM_PREPARACAO");//Any pedido com status igual a "AGUARDANDO_CONFIRMACAO_PAGAMENTO"
     mockedPedidoServiceGateway.obterPorIdentificadorPagamento.calledWith(identificadorPagamento).mockResolvedValue(Optional.of(pedidoDto));
     
     const mockedPagamentoExternoServiceGateway = mock<IPagamentoExternoServiceGateway>();
-    mockedPagamentoExternoServiceGateway.mapStatus.calledWith(statusPagamento).mockReturnValue(StatusPedido.PAGO);
+    mockedPagamentoExternoServiceGateway.mapStatus.calledWith(statusPagamento).mockReturnValue(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO);
     
     const usecase = new ConfirmarPagamentoUseCase(mockedLogger, mockedPedidoServiceGateway, mockedPagamentoExternoServiceGateway);
 
@@ -31,6 +31,6 @@ describe("Testes de Confirmar Pagamento - Usecase", () => {
     
     const pedidoDtoStatusPago = mockedPedidoServiceGateway.alterarStatus.mock.calls[0][0];
     expect(pedidoDto.id).toEqual(pedidoDtoStatusPago.id);
-    expect(2).toEqual(pedidoDtoStatusPago.statusId);
+    expect(2).toEqual(pedidoDtoStatusPago.status);
   });
 });

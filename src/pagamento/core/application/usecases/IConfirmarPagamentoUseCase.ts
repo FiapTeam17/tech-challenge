@@ -2,4 +2,6 @@ export const IConfirmarPagamentoUseCase: unique symbol = Symbol("IConfirmarPagam
 
 export interface IConfirmarPagamentoUseCase {
     confirmar(identificadorPagamento: string, statusPagamento: string): Promise<void>;
+
+    confirmarPagamentoMercadoPago(identificadorPagamento: string): Promise<void>;
 }

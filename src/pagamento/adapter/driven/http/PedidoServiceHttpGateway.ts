@@ -95,7 +95,7 @@ export class PedidoServiceHttpGateway implements IPedidoServiceGateway {
       };
 
       const body = {
-        status: StatusPedidoEnumMapper.numberParaString(pedido.statusId),
+        status: StatusPedidoEnumMapper.stringParaEnum(pedido.status),
       };
 
       this.logger.info("Try connect pedidoService. config={}, method=patch, body={}", config, body);
@@ -163,7 +163,9 @@ export class PedidoServiceHttpGateway implements IPedidoServiceGateway {
 
   private getPedidoFromResponse(response: any): Optional<PedidoDto> {
     const id = response.data.id;
-    const status = StatusPedido[response.data.status] as unknown as number;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const status = StatusPedido[response.data.status] as unknown as string;
     const pedido = new PedidoDto(id, status);
 
     return Optional.of(pedido);

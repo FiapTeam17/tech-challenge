@@ -41,9 +41,9 @@ export class PagamentoMockExternalServiceHttpGateway implements IPagamentoExtern
     mapStatus(statusPagamento: string): StatusPedido {
         this.logger.trace("Start statusPagamento={}", statusPagamento);
 
-        let statusPedido = StatusPedido.PAGAMENTO_INVALIDO;
+        let statusPedido = StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
         if (statusPagamento === "pago_sucesso") {
-            statusPedido = StatusPedido.PAGO;
+            statusPedido = StatusPedido.EM_PREPARACAO;
         }
 
         this.logger.trace("End statusPedido={}", statusPedido);
