@@ -5,6 +5,9 @@ import { PedidoNotFoundException } from "../exceptions/PedidoNotFoundException";
 import { IObterPedidoUseCase } from "../ports/IObterPedidoUseCase";
 import { Injectable, ProviderScope, ProviderType } from "@tsed/di";
 import { PedidoConsultaDto, PedidoEmAndamentoDto } from "../../dtos";
+import { PedidoPagamentoDto } from "../../dtos/PedidoPagamentoDto";
+import { IPagamentoRepositoryGateway } from "../../../../pagamento";
+import { IObterPagamentoUseCase } from "../../../../pagamento/core/application/usecases/IObterPagamentoUseCase";
 
 @Injectable({
     type: ProviderType.SERVICE,
@@ -15,7 +18,9 @@ export class ObterPedidoUseCase implements IObterPedidoUseCase {
 
     constructor(
         @Inject(IPedidoRepositoryGateway) private pedidoRepositoryGateway: IPedidoRepositoryGateway,
-        @Inject() private logger: Logger) { }
+        @Inject(IObterPagamentoUseCase) private obterPagamentoUseCase: IObterPagamentoUseCase,
+        @Inject() private logger: Logger) {
+    }
 
     async obterPorId(id: number): Promise<PedidoConsultaDto> {
         this.logger.trace("Start id={}", id);
@@ -67,4 +72,22 @@ export class ObterPedidoUseCase implements IObterPedidoUseCase {
         return PedidoConsultaDto.getInstance(pedido);
     }
 
+    async consultaStatusPagamento(idPedido: number): Promise<PedidoPagamentoDto> {
+        this.logger.trace("Start idPedido={}", idPedido);
+        const pedidoDto = await this.pedidoRepositoryGateway.obterPorId(idPedido);
+        if (pedidoDto.isEmpty()) {
+            this.logger.warn("Pedido não encontrado.");
+            return new PedidoPagamentoDto(idPedido, false);
+        }
+        const pedido = pedidoDto.get();
+        //chamar usecase do pagamento solicitando status do pagamento.
+        //criar um novo usecase de obter pagamento por pedido
+        const pagamentos = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedido.id!);
+        if (pagamentos.isEmpty() || pagamentos.get().length == 0) {
+            this.logger.warn("Pagamento não encontrado.");
+            return new PedidoPagamentoDto(pedido.id!, false);
+        }
+        this.logger.trace("End pedido={}", pedido.id);
+        return new PedidoPagamentoDto(pedido.id!, true);
+    }
 }

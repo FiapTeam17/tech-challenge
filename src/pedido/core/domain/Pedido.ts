@@ -112,15 +112,15 @@ export class Pedido {
                 }
                 throw new AlteracaoStatusPedidoException("O status do pedido não permite essa alteração");
 
-            case StatusPedido.PAGO || StatusPedido.PAGAMENTO_INVALIDO:
-                if (this._status === StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO) {
-                    this._status = newStatus;
-                    break;
-                }
-                throw new AlteracaoStatusPedidoException("O status do pedido não permite essa alteração");
+            // case StatusPedido.PAGO || StatusPedido.PAGAMENTO_INVALIDO:
+            //     if (this._status === StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO) {
+            //         this._status = newStatus;
+            //         break;
+            //     }
+            //     throw new AlteracaoStatusPedidoException("O status do pedido não permite essa alteração");
 
             case StatusPedido.EM_PREPARACAO:
-                if (this._status === StatusPedido.RECEBIDO) {
+                if (this._status === StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO) {
                     this._status = newStatus;
                     break;
                 }
@@ -162,22 +162,22 @@ export class Pedido {
         this._cliente = undefined;
     }
 
-    public toPedidoDto(): PedidoDto{
+    public toPedidoDto(): PedidoDto {
 
-        const itens = this.itens?.map( i => i.toPeditoItemDto()) || [];
+        const itens = this.itens?.map(i => i.toPeditoItemDto()) || [];
 
         return new PedidoDto(
-          this.status as never,
-          this.dataCadastro as never,
-          itens,
-          this.observacao,
-          this.cliente?.toClienteDto(),
-          this.dataConclusao,
-          this.id
+            this.status as never,
+            this.dataCadastro as never,
+            itens,
+            this.observacao,
+            this.cliente?.toClienteDto(),
+            this.dataConclusao,
+            this.id
         );
     }
 
-    static getInstance(pedidoDto: PedidoDto): Pedido{
+    static getInstance(pedidoDto: PedidoDto): Pedido {
 
         let cliente = undefined;
         if (pedidoDto.cliente) {
@@ -185,21 +185,21 @@ export class Pedido {
         }
 
         const pedido = new Pedido(
-          pedidoDto.id,
-          cliente,
-          pedidoDto.observacao,
-          pedidoDto.status,
-          pedidoDto.dataCadastro,
-          pedidoDto.dataConclusao
+            pedidoDto.id,
+            cliente,
+            pedidoDto.observacao,
+            pedidoDto.status,
+            pedidoDto.dataCadastro,
+            pedidoDto.dataConclusao
         );
 
         pedido.itens = pedidoDto.itens?.map(i => {
             return new PedidoItem(
-              i.id,
-              pedido,
-              new Produto(i.produto.id),
-              i.quantidade,
-              i.valorUnitario
+                i.id,
+                pedido,
+                new Produto(i.produto.id),
+                i.quantidade,
+                i.valorUnitario
             );
         });
 

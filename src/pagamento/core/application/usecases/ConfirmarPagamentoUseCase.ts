@@ -2,7 +2,7 @@ import { Inject, Logger } from "@tsed/common";
 import { Injectable, ProviderScope, ProviderType } from "@tsed/di";
 import { IPagamentoExternoServiceGateway, IPedidoServiceGateway } from "../ports";
 import { PedidoNotFoundException } from "../exceptions/PedidoNotFoundException";
-import { Pedido } from "../../../../pedido";
+import { Pedido, StatusPedido, StatusPedidoEnumMapper } from "../../../../pedido";
 import { IConfirmarPagamentoUseCase } from "./IConfirmarPagamentoUseCase";
 import { PedidoDto } from "../../dto/PedidoDto";
 
@@ -16,16 +16,17 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
     constructor(
         @Inject() private logger: Logger,
         @Inject(IPedidoServiceGateway) private pedidoServiceGateway: IPedidoServiceGateway,
-        @Inject(IPagamentoExternoServiceGateway) private pagamentoExternoServiceGateway: IPagamentoExternoServiceGateway,
-    ) { }
+        @Inject(IPagamentoExternoServiceGateway) private pagamentoExternoServiceGateway: IPagamentoExternoServiceGateway
+    ) {
+    }
 
     async confirmar(identificadorPagamento: string, statusPagamento: string): Promise<void> {
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento, statusPagamento);
 
         const pedidoDto = await this.obtemPedidoPorPagamentoId(identificadorPagamento);
-        
+
         const status = this.pagamentoExternoServiceGateway.mapStatus(statusPagamento);
-        const pedido = Pedido.getInstancia(pedidoDto.id, pedidoDto.statusId);
+        const pedido = Pedido.getInstancia(pedidoDto.id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status));
         pedido.setStatus(status);
 
         const pedidoDtoStatusPago = new PedidoDto(pedido.id as number, pedido.getStatus());
@@ -35,6 +36,16 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
         this.logger.trace("End");
     }
 
+    async confirmarPagamentoMercadoPago(identificadorPagamento: string): Promise<void> {
+        this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento);
+        const pedidoDto = await this.obtemPedidoPorPagamentoId(identificadorPagamento);
+        //const status = this.pagamentoExternoServiceGateway.mapStatus(statusPagamento);
+        const pedido = Pedido.getInstancia(pedidoDto.id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status));
+        pedido.setStatus(StatusPedido.EM_PREPARACAO);
+        const pedidoDtoStatusPago = new PedidoDto(pedido.id as number, pedido.getStatus());
+        await this.pedidoServiceGateway.alterarStatus(pedidoDtoStatusPago);
+        this.logger.trace("End");
+    }
 
     private async obtemPedidoPorPagamentoId(identificadorPagamento: string) {
         const pedidoOp = await this.pedidoServiceGateway.obterPorIdentificadorPagamento(identificadorPagamento);
