@@ -5,6 +5,9 @@ import { PAGAMENTO_DATABASE_REPOSITORY } from "../../../../config/database/repos
 import { IPagamentoRepositoryGateway } from "../../../../pagamento/core/application/ports/IPagamentoRepositoryGateway";
 import { PagamentoDto } from "../../../../pagamento/core/dto/PagamentoDto";
 import { PagamentoEntity } from "./entities/PagamentoEntity";
+import { StatusPedido, StatusPedidoEnumMapper } from "../../../../pedido";
+import { Equal } from "typeorm";
+import { Optional } from "typescript-optional";
 
 @Injectable({
     type: ProviderType.SERVICE,
@@ -27,12 +30,24 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
 
             this.logger.trace("End pagamentoEntityCreatedId={}", pagamentoEntityCreatedId);
             return pagamentoEntityCreatedId;
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
+    }
 
+    async obterPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
+        try {
+            this.logger.trace("Start pagamento={}", pedidoId);
+            const pagamentosEntities = await this.pagamentoRepository.findBy({ pedido: Equal(pedidoId) });
+            const pagamentosDto = pagamentosEntities.map(pag => pag.getDto());
+            this.logger.trace("End obterPorPedidoId={}", pedidoId);
+            return Optional.ofNullable(pagamentosDto);
+        } catch (e) {
+            console.log(e);
+            this.logger.error(e);
+            throw new ErrorToAccessDatabaseException();
+        }
     }
 }

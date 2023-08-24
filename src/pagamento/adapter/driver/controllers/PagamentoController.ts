@@ -6,6 +6,7 @@ import { IConfirmarPagamentoUseCase, IEfetuarPagamentoUseCase } from "../../../c
 import { PagamentoJson } from "./json/PagamentoJson";
 import { ConfirmacaoPagamentoJson } from "./json/ConfirmacaoPagamentoJson";
 import { EfetuarPagamentoParamDto } from "../../../core/dto/flows/EfetuarPagamentoParamDto";
+import { ConfirmacaoPagamentoMpJson } from "./json/ConfirmacaoPagamentoMpJson";
 
 @Controller("")
 export class PagamentoController {
@@ -33,6 +34,15 @@ export class PagamentoController {
 
         //fixme: Esta chamada deve ser async
         await this.confirmarPagamentoUseCase.confirmar(confirmacaoPagamentoJson.identificador, confirmacaoPagamentoJson.status);
+        this.logger.trace("End");
+    }
+
+    @Post("/pagamentos/confirmarMercadoPago")
+    @Returns(200)
+    async confirmarMercadoPago(@BodyParams() confirmacaoPagamentoMpJson: ConfirmacaoPagamentoMpJson): Promise<void> {
+        this.logger.info("Start confirmacaoPagamentoJson={}", confirmacaoPagamentoMpJson);
+        //fixme: Esta chamada deve ser async
+        await this.confirmarPagamentoUseCase.confirmarPagamentoMercadoPago(confirmacaoPagamentoMpJson.data.id);
         this.logger.trace("End");
     }
 }

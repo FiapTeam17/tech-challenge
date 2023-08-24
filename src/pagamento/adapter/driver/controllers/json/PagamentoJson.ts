@@ -9,7 +9,7 @@ export class PagamentoJson {
 
     getDto(): PagamentoDto {
         const cartoesCredito = this.cartoesCreditos.map(cc => new CartaoCreditoDto(cc.numero, cc.cvv, cc.nome, cc.cpf, cc.valor));
-        const pedido = new PedidoDto(this.pedidoId, undefined as unknown as number);
+        const pedido = new PedidoDto(this.pedidoId, undefined as unknown as string);
         return new PagamentoDto(undefined, pedido, cartoesCredito);
     }
 }

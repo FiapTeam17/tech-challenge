@@ -7,6 +7,7 @@ import {
     CamposObrigatoriosNaoPreechidoException
 } from "../../../core/application/exceptions/CamposObrigatoriosNaoPreechidoException";
 import { StatusPedidoEnumMapper } from "../../../core/domain";
+import { PedidoPagamentoDto } from "../../../core/dtos/PedidoPagamentoDto";
 
 @Controller("/pedidos")
 export class PedidoController {
@@ -72,10 +73,19 @@ export class PedidoController {
 
     @Get("/pagamentos/:idPagamento")
     @Returns(200, PedidoConsultaDto)
-    async obterPedidosPorIdentificdorPagamento(@PathParams("idPagamento") idPagamento: string): Promise<PedidoConsultaDto> {
+    async obterPedidosPorIdentificadorPagamento(@PathParams("idPagamento") idPagamento: string): Promise<PedidoConsultaDto> {
         this.logger.trace("Start identificadorPagamento={}", idPagamento);
         const pedido = await this.obterPedidoUseCase.obterPorIdentificadorPagamento(idPagamento);
         this.logger.trace("End pedidoJson={}", pedido);
         return pedido;
-    }    
+    }
+
+    @Get("/consultarPagamentos/:idPedido")
+    @Returns(200, PedidoPagamentoDto)
+    async consultarPagamentos(@PathParams("idPedido") idPedido: number): Promise<PedidoPagamentoDto> {
+        this.logger.trace("Start identificadorPagamento={}", idPedido);
+        const pedidoPagamentoDto = await this.obterPedidoUseCase.consultaStatusPagamento(idPedido);
+        this.logger.trace("End pedidoJson={}", pedidoPagamentoDto);
+        return pedidoPagamentoDto;
+    }
 }
