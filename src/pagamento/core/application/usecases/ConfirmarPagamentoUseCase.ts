@@ -21,6 +21,9 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
     }
 
     async confirmar(identificadorPagamento: string, statusPagamento: string): Promise<void> {
+        //obtemPedidoPorPagamentoId
+        //atualizar o pagamento na tab Pagamento com status PAGO, RECUSADO etc
+        //Se for PAGO atualziar para RECEBIDO
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento, statusPagamento);
 
         const pedidoDto = await this.obtemPedidoPorPagamentoId(identificadorPagamento);
@@ -38,6 +41,8 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
     async confirmarPagamentoMercadoPago(identificadorPagamento: string): Promise<void> {
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento);
+        //chamar a rota para verificar se o pagamento está ok(https://api.mercadopago.com/v1/payments/{id})
+        //verificar o status do pagamento (converter de acordo com o nosso status)"PENDENTE", "PAGO", "RECUSADO"(chamar o usucase (confirmar)
         const pedidoDto = await this.obtemPedidoPorPagamentoId(identificadorPagamento);
         //const status = this.pagamentoExternoServiceGateway.mapStatus(statusPagamento);
         const pedido = Pedido.getInstancia(pedidoDto.id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status));
