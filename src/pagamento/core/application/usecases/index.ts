@@ -4,3 +4,6 @@ export * from './IConfirmarPagamentoUseCase';
 export * from './IEfetuarPagamentoUseCase';
 export * from './IObterPagamentoUseCase';
 export * from './ObterPagamentoUseCase';
+export * from './ObterPagamentoUseCase';
+export * from './AtualizarStatusPagamentoUseCase';
+export * from './IAtualizarStatusPagamentoUseCase';

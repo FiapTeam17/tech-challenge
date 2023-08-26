@@ -2,7 +2,6 @@ import { BodyParams, Inject, Logger } from "@tsed/common";
 import { Post, Returns } from "@tsed/schema";
 import { Controller } from "@tsed/di";
 import { IConfirmarPagamentoUseCase, IEfetuarPagamentoUseCase } from "../../../core/application";
-
 import { PagamentoJson } from "./json/PagamentoJson";
 import { ConfirmacaoPagamentoJson } from "./json/ConfirmacaoPagamentoJson";
 import { EfetuarPagamentoParamDto } from "../../../core/dto/flows/EfetuarPagamentoParamDto";

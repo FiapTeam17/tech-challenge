@@ -1,10 +1,12 @@
 import { Inject, Logger } from "@tsed/common";
 import { Injectable, ProviderScope, ProviderType } from "@tsed/di";
-import { IPagamentoExternoServiceGateway, IPedidoServiceGateway } from "../ports";
+import { IPagamentoRepositoryGateway, IPedidoServiceGateway } from "../ports";
 import { PedidoNotFoundException } from "../exceptions/PedidoNotFoundException";
-import { Pedido, StatusPedido, StatusPedidoEnumMapper } from "../../../../pedido";
+import { IAtualizarStatusPedidoUseCase, StatusPedido } from "../../../../pedido";
 import { IConfirmarPagamentoUseCase } from "./IConfirmarPagamentoUseCase";
-import { PedidoDto } from "../../dto/PedidoDto";
+import { IPagamentoMpServiceHttpGateway } from "../ports/IPagamentoServiceHttpGateway";
+import { Pagamento } from "../../domain/Pagamento";
+import { StatusPagamento } from "../../domain/StatusPagamento";
 
 @Injectable({
     type: ProviderType.SERVICE,
@@ -16,40 +18,33 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
     constructor(
         @Inject() private logger: Logger,
         @Inject(IPedidoServiceGateway) private pedidoServiceGateway: IPedidoServiceGateway,
-        @Inject(IPagamentoExternoServiceGateway) private pagamentoExternoServiceGateway: IPagamentoExternoServiceGateway
+        @Inject(IPagamentoMpServiceHttpGateway) private pagamentoMpServiceHttpGateway: IPagamentoMpServiceHttpGateway,
+        @Inject(IAtualizarStatusPedidoUseCase) private atualizarStatusPedidoUseCase: IAtualizarStatusPedidoUseCase,
+        @Inject(IPagamentoRepositoryGateway) private pagamentoRepositoryGateway: IPagamentoRepositoryGateway
     ) {
     }
 
     async confirmar(identificadorPagamento: string, statusPagamento: string): Promise<void> {
-        //obtemPedidoPorPagamentoId
-        //atualizar o pagamento na tab Pagamento com status PAGO, RECUSADO etc
-        //Se for PAGO atualziar para RECEBIDO
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento, statusPagamento);
-
-        const pedidoDto = await this.obtemPedidoPorPagamentoId(identificadorPagamento);
-
-        const status = this.pagamentoExternoServiceGateway.mapStatus(statusPagamento);
-        const pedido = Pedido.getInstancia(pedidoDto.id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status));
-        pedido.setStatus(status);
-
-        const pedidoDtoStatusPago = new PedidoDto(pedido.id as number, pedido.getStatus());
-
-        await this.pedidoServiceGateway.alterarStatus(pedidoDtoStatusPago);
-
+        const pagamento = await this.pagamentoRepositoryGateway.obterPorIdentificador(identificadorPagamento);
+        if (pagamento.isEmpty()) {
+            this.logger.warn("Pagamento não encontrado. identificadorPagamento={}", identificadorPagamento);
+            throw new PedidoNotFoundException();
+        }
+        const pagamentoDto = pagamento.get();
+        pagamentoDto.status = Pagamento.mapStatus(statusPagamento).get();
+        await this.pagamentoRepositoryGateway.atualizarStatus(pagamentoDto);
+        if (pagamentoDto.status === StatusPagamento.PAGO) {
+            await this.atualizarStatusPedidoUseCase.atualizarStatus(pagamentoDto!.getPedido()!.id, StatusPedido.RECEBIDO);
+        }
         this.logger.trace("End");
     }
 
     async confirmarPagamentoMercadoPago(identificadorPagamento: string): Promise<void> {
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento);
-        //chamar a rota para verificar se o pagamento está ok(https://api.mercadopago.com/v1/payments/{id})
-        //verificar o status do pagamento (converter de acordo com o nosso status)"PENDENTE", "PAGO", "RECUSADO"(chamar o usucase (confirmar)
-        const pedidoDto = await this.obtemPedidoPorPagamentoId(identificadorPagamento);
-        //const status = this.pagamentoExternoServiceGateway.mapStatus(statusPagamento);
-        const pedido = Pedido.getInstancia(pedidoDto.id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status));
-        pedido.setStatus(StatusPedido.EM_PREPARACAO);
-        const pedidoDtoStatusPago = new PedidoDto(pedido.id as number, pedido.getStatus());
-        await this.pedidoServiceGateway.alterarStatus(pedidoDtoStatusPago);
-        this.logger.trace("End");
+        const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(identificadorPagamento);
+        const pagamentoMpDto = pagamentoMp.get();
+        await this.confirmar(identificadorPagamento, pagamentoMpDto.status.toLowerCase());
     }
 
     private async obtemPedidoPorPagamentoId(identificadorPagamento: string) {
@@ -58,7 +53,6 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
             this.logger.warn("Pedido não encontrado. identificadorPagamento={}", identificadorPagamento);
             throw new PedidoNotFoundException();
         }
-
         return pedidoOp.get();
     }
 }

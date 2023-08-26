@@ -1,16 +1,17 @@
 import { CartaoCreditoDto } from "./CartaoCreditoDto";
 import { PedidoDto } from "./PedidoDto";
 import { PedidoEntity } from "../../../pedido";
+import { StatusPagamento } from "../domain/StatusPagamento";
 
 export class PagamentoDto {
     constructor(
         public readonly id?: number,
         private pedido?: PedidoDto,
         public readonly cartoesCredito?: CartaoCreditoDto[],
-        private identificadorPagamentoExterno?: string
+        private identificadorPagamentoExterno?: string,
+        public status?: StatusPagamento
     ) {
     }
-
 
     public setIdentificadorPagamentoExterno(identificadorPagamentoExterno: string) {
         this.identificadorPagamentoExterno = identificadorPagamentoExterno;
