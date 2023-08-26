@@ -1,4 +1,4 @@
-import { Pedido, StatusPedido } from "../../../pedido";
+import { Pedido } from "../../../pedido";
 import { CartaoCredito } from "./CartaoCredito";
 import { SistemaExterno } from "./SistemaExterno";
 import { StatusPagamento } from "./StatusPagamento";
