@@ -4,7 +4,7 @@ import { IPagamentoRepositoryGateway, IPedidoServiceGateway } from "../ports";
 import { PedidoNotFoundException } from "../exceptions/PedidoNotFoundException";
 import { IAtualizarStatusPedidoUseCase, StatusPedido } from "../../../../pedido";
 import { IConfirmarPagamentoUseCase } from "./IConfirmarPagamentoUseCase";
-import { IPagamentoMpServiceHttpGateway } from "../ports/IPagamentoServiceHttpGateway";
+import { IPagamentoMpServiceHttpGateway } from "../ports/IPagamentoMpServiceHttpGateway";
 import { Pagamento } from "../../domain/Pagamento";
 import { StatusPagamento } from "../../domain/StatusPagamento";
 
@@ -17,7 +17,6 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
     constructor(
         @Inject() private logger: Logger,
-        @Inject(IPedidoServiceGateway) private pedidoServiceGateway: IPedidoServiceGateway,
         @Inject(IPagamentoMpServiceHttpGateway) private pagamentoMpServiceHttpGateway: IPagamentoMpServiceHttpGateway,
         @Inject(IAtualizarStatusPedidoUseCase) private atualizarStatusPedidoUseCase: IAtualizarStatusPedidoUseCase,
         @Inject(IPagamentoRepositoryGateway) private pagamentoRepositoryGateway: IPagamentoRepositoryGateway
@@ -47,12 +46,12 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
         await this.confirmar(identificadorPagamento, pagamentoMpDto.status.toLowerCase());
     }
 
-    private async obtemPedidoPorPagamentoId(identificadorPagamento: string) {
-        const pedidoOp = await this.pedidoServiceGateway.obterPorIdentificadorPagamento(identificadorPagamento);
-        if (pedidoOp.isEmpty()) {
-            this.logger.warn("Pedido não encontrado. identificadorPagamento={}", identificadorPagamento);
-            throw new PedidoNotFoundException();
-        }
-        return pedidoOp.get();
-    }
+    // private async obtemPedidoPorPagamentoId(identificadorPagamento: string) {
+    //     const pedidoOp = await this.pedidoServiceGateway.obterPorIdentificadorPagamento(identificadorPagamento);
+    //     if (pedidoOp.isEmpty()) {
+    //         this.logger.warn("Pedido não encontrado. identificadorPagamento={}", identificadorPagamento);
+    //         throw new PedidoNotFoundException();
+    //     }
+    //     return pedidoOp.get();
+    // }
 }

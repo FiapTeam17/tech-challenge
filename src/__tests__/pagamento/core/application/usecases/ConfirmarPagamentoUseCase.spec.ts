@@ -8,7 +8,7 @@ import { PedidoDto } from "../../../../../../src/pagamento/core/dto/PedidoDto";
 import { Optional } from "typescript-optional";
 import {
   IPagamentoMpServiceHttpGateway
-} from "../../../../../pagamento/core/application/ports/IPagamentoServiceHttpGateway";
+} from "../../../../../pagamento/core/application/ports/IPagamentoMpServiceHttpGateway";
 import { PagamentoMercadoPagoDto } from "../../../../../pagamento/core/dto/PagamentoMercadoPagoDto";
 
 const mockedLogger = mock<Logger>();

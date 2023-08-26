@@ -2,7 +2,7 @@ import { Logger } from "@tsed/common";
 import { Inject, Injectable, ProviderScope, ProviderType } from "@tsed/di";
 import { Optional } from "typescript-optional";
 import axios from "axios";
-import { IPagamentoMpServiceHttpGateway } from "../../../core/application/ports/IPagamentoServiceHttpGateway";
+import { IPagamentoMpServiceHttpGateway } from "../../../core/application/ports/IPagamentoMpServiceHttpGateway";
 import { PagamentoMercadoPagoDto } from "../../../core/dto/PagamentoMercadoPagoDto";
 import {
     ErrorToAccessPagamentoServicoExternoException
