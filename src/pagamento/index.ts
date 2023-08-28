@@ -17,5 +17,7 @@ export * from "./core/dto/CartaoCreditoDto";
 export * from "./core/dto/PagamentoDto";
 export * from "./core/dto/PagamentoMercadoPagoDto";
 export * from "./core/dto/PedidoDto";
+export * from "./core/dto/QrCodeRequestDto";
+export * from "./core/dto/QrCodeResponseDto";
 export * from "./core/dto/flows/EfetuarPagamentoParamDto";
 export * from "./core/dto/flows/EfetuarPagamentoReturnDto";
