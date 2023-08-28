@@ -12,9 +12,13 @@ export class PagamentoEntity {
     })
     public codigoPagamento?: string;
 
-
     @ManyToOne(() => PedidoEntity, (pedido) => pedido.pagamentos, { eager: true })
     pedido?: PedidoEntity;
+
+    @Column({
+        nullable: true
+    })
+    public status: string;
 
     static getInstancia(pagamento: PagamentoDto): PagamentoEntity {
         const pagamentoEntity = new PagamentoEntity();
