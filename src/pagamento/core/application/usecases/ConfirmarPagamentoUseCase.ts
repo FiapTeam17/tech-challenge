@@ -1,6 +1,6 @@
 import { Inject, Logger } from "@tsed/common";
 import { Injectable, ProviderScope, ProviderType } from "@tsed/di";
-import { IPagamentoRepositoryGateway, IPedidoServiceGateway } from "../ports";
+import { IPagamentoExternoServiceGateway, IPagamentoRepositoryGateway, IPedidoServiceGateway } from "../ports";
 import { PedidoNotFoundException } from "../exceptions/PedidoNotFoundException";
 import { IAtualizarStatusPedidoUseCase, StatusPedido } from "../../../../pedido";
 import { IConfirmarPagamentoUseCase } from "./IConfirmarPagamentoUseCase";
@@ -17,7 +17,7 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
     constructor(
         @Inject() private logger: Logger,
-        @Inject(IPagamentoMpServiceHttpGateway) private pagamentoMpServiceHttpGateway: IPagamentoMpServiceHttpGateway,
+        @Inject(IPagamentoExternoServiceGateway) private pagamentoMpServiceHttpGateway: IPagamentoExternoServiceGateway,
         @Inject(IAtualizarStatusPedidoUseCase) private atualizarStatusPedidoUseCase: IAtualizarStatusPedidoUseCase,
         @Inject(IPagamentoRepositoryGateway) private pagamentoRepositoryGateway: IPagamentoRepositoryGateway
     ) {
@@ -42,6 +42,7 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
     async confirmarPagamentoMercadoPago(identificadorPagamento: string): Promise<void> {
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento);
         const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(identificadorPagamento);
+        //const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(identificadorPagamento);
         const pagamentoMpDto = pagamentoMp.get();
         await this.confirmar(identificadorPagamento, pagamentoMpDto.status.toLowerCase());
     }

@@ -9,9 +9,13 @@ import {
 import { StatusPedido } from "../../../../pedido";
 import { RequestPagamentoDto } from "../../../../pedido/core/dtos/RequestPagamentoDto";
 import { ResponsePagamentoDto } from "../../../../pedido/core/dtos/ResponsePagamentoDto";
+import { Optional } from "typescript-optional";
+import { PagamentoMercadoPagoDto } from "../../../core/dto/PagamentoMercadoPagoDto";
+import axios from "axios";
 
 @Injectable({
     type: ProviderType.SERVICE,
+
     scope: ProviderScope.REQUEST,
     provide: IPagamentoExternoServiceGateway
 })
@@ -19,6 +23,8 @@ export class PagamentoMockExternalServiceHttpGateway implements IPagamentoExtern
 
     @Inject()
     private logger: Logger;
+
+    private readonly clientServiceUrlBase: string = "https://api.mercadopago.com";
 
     async enviarPagamento(dto: RequestPagamentoDto): Promise<ResponsePagamentoDto> {
         try {
@@ -35,6 +41,27 @@ export class PagamentoMockExternalServiceHttpGateway implements IPagamentoExtern
             this.logger.error(error);
             throw new ErrorToAccessPagamentoServicoExternoException();
 
+        }
+    }
+
+    async obterPagamento(identificadorPagamento: string): Promise<Optional<PagamentoMercadoPagoDto>> {
+        try {
+            const config = {
+                method: "get",
+                maxBodyLength: Infinity,
+                url: `${this.clientServiceUrlBase}/v1/payments/${identificadorPagamento}`,
+                headers: {
+                    'Authorization': 'Bearer TEST-8375344102018334-082012-842b3b0893d786059eed6e0694cc6acf-29575195'
+                }
+            };
+
+            this.logger.info("Try connect mercadopago. config={}", config);
+            const response = await axios.request<Optional<PagamentoMercadoPagoDto>>(config);
+            this.logger.info("response={}", response);
+            return response.data;
+        } catch (error) {
+            this.logger.warn("Erro ao obter pagamento no Mercado Pago. identificadorPagamento={}", identificadorPagamento);
+            throw new ErrorToAccessPagamentoServicoExternoException();
         }
     }
 
