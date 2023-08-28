@@ -12,6 +12,8 @@ import { ResponsePagamentoDto } from "../../../../pedido/core/dtos/ResponsePagam
 import { Optional } from "typescript-optional";
 import { PagamentoMercadoPagoDto } from "../../../core/dto/PagamentoMercadoPagoDto";
 import axios from "axios";
+import { QrCodeResponseDto } from "../../../core/dto/QrCodeResponseDto";
+import { QrCodeRequestDto } from "../../../core/dto/QrCodeRequestDto";
 
 @Injectable({
     type: ProviderType.SERVICE,
@@ -61,6 +63,29 @@ export class PagamentoMockExternalServiceHttpGateway implements IPagamentoExtern
             return response.data;
         } catch (error) {
             this.logger.warn("Erro ao obter pagamento no Mercado Pago. identificadorPagamento={}", identificadorPagamento);
+            throw new ErrorToAccessPagamentoServicoExternoException();
+        }
+    }
+
+    async gerarQrCode(qrCodeDtoRequestDto: QrCodeRequestDto): Promise<Optional<QrCodeResponseDto>> {
+        try {
+            const config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: `${this.clientServiceUrlBase}/instore/orders/qr/seller/collectors/29575195/pos/SUC001POS001/qrs`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer TEST-8375344102018334-082012-842b3b0893d786059eed6e0694cc6acf-29575195'
+                },
+                data : qrCodeDtoRequestDto
+            };
+
+            this.logger.info("Try connect mercadopago. config={}", config);
+            const response = await axios.request<Optional<QrCodeResponseDto>>(config);
+            this.logger.info("response={}", response);
+            return response.data;
+        } catch (error) {
+            this.logger.warn("Erro ao gerar o qrcode no Mercado Pago. identificadorPagamento={}", qrCodeDtoRequestDto.title);
             throw new ErrorToAccessPagamentoServicoExternoException();
         }
     }
