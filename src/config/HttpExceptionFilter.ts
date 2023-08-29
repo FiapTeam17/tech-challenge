@@ -1,7 +1,8 @@
 import {PlatformContext, ResponseErrorObject} from "@tsed/common";
 import {Catch, ExceptionFilterMethods} from "@tsed/platform-exceptions";
 import {Exception} from "@tsed/exceptions";
-import { SystemBaseException } from "../common";
+import { SystemBaseException } from "@common";
+
 
 @Catch(SystemBaseException, Exception)
 export class ErrorFilter implements ExceptionFilterMethods {
