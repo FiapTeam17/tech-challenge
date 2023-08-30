@@ -1,8 +1,8 @@
 import { Logger } from "@tsed/common";
-import { IProdutoRepositoryGateway } from "@gerencial/interfaces";
+import { IAlterarProdutoUseCase, IProdutoRepositoryGateway } from "@gerencial/interfaces";
 import { AlterarProdutoParamsDto, AlterarProdutoReturnDto } from "@gerencial/dtos";
 
-export class AlterarProdutoUseCase {
+export class AlterarProdutoUseCase implements IAlterarProdutoUseCase{
     constructor( 
         private produtoRepositoryGateway: IProdutoRepositoryGateway,
         private logger: Logger){}

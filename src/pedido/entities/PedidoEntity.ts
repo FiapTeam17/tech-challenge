@@ -3,6 +3,7 @@ import { StatusPedido } from "@pedido/entities/StatusPedido";
 import { PedidoItemEntity } from "@pedido/entities/PedidoItemEntity";
 import { ClienteEntity, ProdutoEntity } from "@gerencial/entities";
 import { AlteracaoStatusPedidoException } from "@gerencial/usecases";
+import { PagamentoEntity } from "@pagamento/entities";
 
 export class PedidoEntity {
     get dataCadastro(): Date | undefined {
@@ -66,13 +67,13 @@ export class PedidoEntity {
         this._itens = value;
     }
 
-    // get pagamentos(): Pagamento[] | undefined {
-    //     return this._pagamentos;
-    // }
-    //
-    // set pagamentos(value: Pagamento[]) {
-    //     this._pagamentos = value;
-    // }
+    get pagamentos(): PagamentoEntity[] | undefined {
+        return this._pagamentos;
+    }
+
+    set pagamentos(value: PagamentoEntity[]) {
+        this._pagamentos = value;
+    }
 
     constructor(
         private _id?: number,
@@ -82,7 +83,7 @@ export class PedidoEntity {
         private _dataCadastro?: Date,
         private _dataConclusao?: Date,
         private _itens?: PedidoItemEntity[],
-        // private _pagamentos?: Pagamento[],
+        private _pagamentos?: PagamentoEntity[],
     ) {
     }
 

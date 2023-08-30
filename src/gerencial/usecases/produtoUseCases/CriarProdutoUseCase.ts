@@ -1,9 +1,9 @@
-import { IProdutoRepositoryGateway } from "@gerencial/interfaces";
+import { ICriarProdutoUseCase, IProdutoRepositoryGateway } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
 import { CriarProdutoParamsDto, CriarProdutoReturnDto, ProdutoDto } from "@gerencial/dtos";
 import { ProdutoValidacaoException } from "@gerencial/usecases";
 
-export class CriarProdutoUseCase {
+export class CriarProdutoUseCase implements ICriarProdutoUseCase{
     constructor( 
         private produtoRepositoryGateway: IProdutoRepositoryGateway,
         private logger: Logger,

@@ -1,16 +1,17 @@
 import { Logger } from "@tsed/common";
-import { IPedidoRepositoryGateway } from "@pedido/interfaces";
-import { ObterClienteUseCase, ObterProdutoUseCase, ProdutoNotFoundException } from "@gerencial/usecases";
+import { ICriarPedidoUseCase, IPedidoRepositoryGateway } from "@pedido/interfaces";
+import { ProdutoNotFoundException } from "@gerencial/usecases";
 import { PedidoCadastroDto, PedidoConsultaDto } from "@pedido/dtos";
 import { PedidoEntity, PedidoItemEntity, StatusPedido } from "@pedido/entities";
 import { ClienteEntity, ProdutoEntity } from "@gerencial/entities";
+import { IObterClienteUseCase, IObterProdutoUseCase } from "@gerencial/interfaces";
 
-export class CriarPedidoUseCase {
+export class CriarPedidoUseCase implements ICriarPedidoUseCase{
 
   constructor(
     private pedidoRepositoryGateway: IPedidoRepositoryGateway,
-    private obterProdutoUseCase: ObterProdutoUseCase,
-    private obterClienteUseCase: ObterClienteUseCase,
+    private obterProdutoUseCase: IObterProdutoUseCase,
+    private obterClienteUseCase: IObterClienteUseCase,
     private logger: Logger) { }
 
   async criar(pedidoDto: PedidoCadastroDto): Promise<PedidoConsultaDto> {

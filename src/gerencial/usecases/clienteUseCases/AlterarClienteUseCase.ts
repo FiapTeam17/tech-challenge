@@ -1,10 +1,10 @@
-import { IClienteRepositoryGateway } from "@gerencial/interfaces";
+import { IAlterarClienteUseCase, IClienteRepositoryGateway } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
 import { AlterarClienteParamsDto, AlterarClienteReturnDto, ClienteDto } from "@gerencial/dtos";
 import { ClienteNaoEncontradoException } from "@gerencial/usecases";
 import { ClienteEntity } from "@gerencial/entities";
 
-export class AlterarClienteUseCase {
+export class AlterarClienteUseCase implements IAlterarClienteUseCase{
 
     constructor( 
         private clienteRepositoryGateway: IClienteRepositoryGateway,

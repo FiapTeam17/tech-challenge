@@ -1,7 +1,7 @@
 import { Logger } from "@tsed/common";
-import { IProdutoRepositoryGateway } from "@gerencial/interfaces";
+import { IExcluirProdutoUseCase, IProdutoRepositoryGateway } from "@gerencial/interfaces";
 
-export class ExcluirProdutoUseCase {
+export class ExcluirProdutoUseCase implements IExcluirProdutoUseCase{
     constructor(
         private produtoRepositoryGateway: IProdutoRepositoryGateway,
         private logger: Logger,

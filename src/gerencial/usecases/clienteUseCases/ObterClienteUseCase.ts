@@ -1,10 +1,10 @@
-import { IClienteRepositoryGateway } from "@gerencial/interfaces";
+import { IClienteRepositoryGateway, IObterClienteUseCase } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
 import { Optional } from "typescript-optional";
 import { ClienteDto } from "@gerencial/dtos";
 import { ClienteNaoEncontradoException } from "@gerencial/usecases";
 
-export class ObterClienteUseCase {
+export class ObterClienteUseCase implements  IObterClienteUseCase{
     constructor( 
        private clienteRepositoryGateway: IClienteRepositoryGateway,
        private logger: Logger

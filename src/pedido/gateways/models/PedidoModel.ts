@@ -3,7 +3,7 @@ import { PedidoItemModel } from "@pedido/gateways";
 import { PedidoDto } from "@pedido/dtos";
 import { StatusPedidoEnumMapper } from "@pedido/types";
 import { ClienteModel } from "@gerencial/gateways";
-
+import { PagamentoModel } from "@pagamento/gateways/models";
 
 @Entity("Pedido")
 export class PedidoModel {
@@ -38,8 +38,8 @@ export class PedidoModel {
         //@JoinTable()
     itens?: PedidoItemModel[];
 
-    // @OneToMany(() => PagamentoEntity, (pagamento) => pagamento.pedido)
-    // pagamentos?: PagamentoEntity[];
+    @OneToMany(() => PagamentoModel, (pagamento) => pagamento.pedido)
+    pagamentos?: PagamentoModel[];
 
     constructor(pedidoDto?: PedidoDto) {
         if (pedidoDto) {

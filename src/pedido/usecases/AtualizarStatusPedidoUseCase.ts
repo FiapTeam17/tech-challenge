@@ -1,11 +1,11 @@
 import { Optional } from "typescript-optional";
 import { Logger } from "@tsed/logger";
-import { IPedidoRepositoryGateway } from "@pedido/interfaces";
+import { IAtualizarStatusPedidoUseCase, IPedidoRepositoryGateway } from "@pedido/interfaces";
 import { PedidoEntity, StatusPedido } from "@pedido/entities";
 import { PedidoDto } from "@pedido/dtos";
 import { PedidoNotFoundException } from "./exceptions/PedidoNotFoundException";
 
-export class AtualizarStatusPedidoUseCase {
+export class AtualizarStatusPedidoUseCase implements IAtualizarStatusPedidoUseCase{
     constructor(
         private pedidoRepositoryGateway: IPedidoRepositoryGateway,
         private logger: Logger) { }

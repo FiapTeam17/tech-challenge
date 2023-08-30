@@ -7,19 +7,21 @@ import { PedidoDto } from "@pedido/dtos";
 import { PedidoItemModel, PedidoModel } from "@pedido/gateways/models";
 import { StatusPedidoEnumMapper } from "@pedido/types";
 import { StatusPedido } from "@pedido/entities";
+import { PagamentoModel } from "@pagamento/gateways/models";
 
 export class PedidoMySqlRepositoryGateway implements IPedidoRepositoryGateway {
 
   private pedidoRepository: Repository<PedidoModel>;
-  //private pagamentoRepository: Repository<PedidoEntity>;
+  private pagamentoRepository: Repository<PagamentoModel>;
   private pedidoItemRepository: Repository<PedidoItemModel>;
 
   constructor(
     private dataSource: DataSource,
     private logger: Logger
   ) {
-    this.pedidoRepository = dataSource.getRepository(PedidoModel);
-    this.pedidoItemRepository = dataSource.getRepository(PedidoItemModel);
+    this.pedidoRepository = this.dataSource.getRepository(PedidoModel);
+    this.pedidoItemRepository = this.dataSource.getRepository(PedidoItemModel);
+    this.pagamentoRepository = this.dataSource.getRepository(PagamentoModel);
   }
 
   async criar(pedido: PedidoDto): Promise<number | undefined> {
@@ -137,21 +139,20 @@ export class PedidoMySqlRepositoryGateway implements IPedidoRepositoryGateway {
 
   async obterPorIdentificadorPagamento(identificadorPagamento: string): Promise<Optional<PedidoDto>> {
     try {
-      // this.logger.trace("Start identificadorPagamento={}", identificadorPagamento);
-      //
-      // const pagamento = await this.pagamentoRepository.findOneBy({
-      //   codigoPagamento: identificadorPagamento
-      // });
-      //
-      // let pedidoOp: Optional<PedidoDto> = Optional.empty();
-      // if (pagamento !== null && pagamento.pedido !== undefined) {
-      //   const pedidoEntity = pagamento.pedido;
-      //   pedidoOp = Optional.of(pedidoEntity.getDto());
-      // }
-      //
-      // this.logger.trace("End pedidoOp={}", pedidoOp)
-      // return pedidoOp;
-      return Optional.empty();
+      this.logger.trace("Start identificadorPagamento={}", identificadorPagamento);
+
+      const pagamento = await this.pagamentoRepository.findOneBy({
+        codigoPagamento: identificadorPagamento
+      });
+
+      let pedidoOp: Optional<PedidoDto> = Optional.empty();
+      if (pagamento !== null && pagamento.pedido !== undefined) {
+        const pedidoEntity = pagamento.pedido;
+        pedidoOp = Optional.of(pedidoEntity.getDto());
+      }
+
+      this.logger.trace("End pedidoOp={}", pedidoOp)
+      return pedidoOp;
     }
     catch (e) {
       this.logger.error(e);

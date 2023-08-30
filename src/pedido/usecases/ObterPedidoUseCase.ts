@@ -1,15 +1,16 @@
-import { IPedidoRepositoryGateway } from "@pedido/interfaces";
+import { IObterPedidoUseCase, IPedidoRepositoryGateway } from "@pedido/interfaces";
 import { Logger } from "@tsed/common";
 import { PedidoConsultaDto, PedidoEmAndamentoDto, PedidoPagamentoDto } from "@pedido/dtos";
 import { PedidoNotFoundException } from "./exceptions/PedidoNotFoundException";
 import { PedidoEntity } from "@pedido/entities";
 import { StatusPedidoEnumMapper } from "@pedido/types";
+import { IObterPagamentoUseCase } from "@pagamento/interfaces";
 
-export class ObterPedidoUseCase {
+export class ObterPedidoUseCase implements IObterPedidoUseCase{
 
     constructor(
       private pedidoRepositoryGateway: IPedidoRepositoryGateway,
-      //private obterPagamentoUseCase: IObterPagamentoUseCase,
+      private obterPagamentoUseCase: IObterPagamentoUseCase,
       private logger: Logger
     ) {
     }
@@ -51,18 +52,17 @@ export class ObterPedidoUseCase {
     }
 
     async obterPorIdentificadorPagamento(identificadorPagamento: string): Promise<PedidoConsultaDto> {
-        // this.logger.trace("Start identificadorPagamento={}", identificadorPagamento);
-        // const pedidoOp = await this.pedidoRepositoryGateway.obterPorIdentificadorPagamento(identificadorPagamento);
-        //
-        // if (pedidoOp.isEmpty()) {
-        //     this.logger.warn("Pedido não encontrado. identificadorPagamento={}", identificadorPagamento);
-        //     throw new PedidoNotFoundException();
-        // }
-        //
-        // const pedido = pedidoOp.get();
-        // this.logger.trace("End pedido={}", pedido);
-        // return PedidoConsultaDto.getInstance(pedido);
-      return new PedidoConsultaDto();
+        this.logger.trace("Start identificadorPagamento={}", identificadorPagamento);
+        const pedidoOp = await this.pedidoRepositoryGateway.obterPorIdentificadorPagamento(identificadorPagamento);
+
+        if (pedidoOp.isEmpty()) {
+            this.logger.warn("Pedido não encontrado. identificadorPagamento={}", identificadorPagamento);
+            throw new PedidoNotFoundException();
+        }
+
+        const pedido = pedidoOp.get();
+        this.logger.trace("End pedido={}", pedido);
+        return PedidoConsultaDto.getInstance(pedido);
     }
 
     async consultaStatusPagamento(idPedido: number): Promise<PedidoPagamentoDto> {
@@ -75,11 +75,11 @@ export class ObterPedidoUseCase {
         const pedido = pedidoDto.get();
         //chamar usecase do pagamento solicitando status do pagamento.
         //criar um novo usecase de obter pagamento por pedido
-        // const pagamentos = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedido.id!);
-        // if (pagamentos.isEmpty() || pagamentos.get().length == 0) {
-        //     this.logger.warn("Pagamento não encontrado.");
-        //     return new PedidoPagamentoDto(pedido.id!, false);
-        // }
+        const pagamentos = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedido.id!);
+        if (pagamentos.isEmpty() || pagamentos.get().length == 0) {
+            this.logger.warn("Pagamento não encontrado.");
+            return new PedidoPagamentoDto(pedido.id!, false);
+        }
         this.logger.trace("End pedido={}", pedido.id);
         return new PedidoPagamentoDto(pedido.id!, true);
     }

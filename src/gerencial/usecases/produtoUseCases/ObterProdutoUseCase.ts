@@ -1,11 +1,11 @@
 import { Logger } from "@tsed/common";
 import { Optional } from "typescript-optional";
-import { IProdutoRepositoryGateway } from "../../interfaces";
-import { ProdutoDto } from "../../dtos";
-import { ProdutoNotFoundException } from "../exception";
-import { ProdutoCategoriaEnumMapper } from "../../types";
+import { IObterProdutoUseCase, IProdutoRepositoryGateway } from "@gerencial/interfaces";
+import { ProdutoDto } from "@gerencial/dtos";
+import { ProdutoNotFoundException } from "@pedido/usecases";
+import { ProdutoCategoriaEnumMapper } from "@gerencial/types";
 
-export class ObterProdutoUseCase {
+export class ObterProdutoUseCase implements IObterProdutoUseCase{
 
     constructor(
         private produtoRepositoryGateway: IProdutoRepositoryGateway,

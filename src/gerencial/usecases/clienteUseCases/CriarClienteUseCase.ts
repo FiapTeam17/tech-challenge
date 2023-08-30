@@ -1,10 +1,10 @@
-import { IClienteRepositoryGateway } from "@gerencial/interfaces";
+import { IClienteRepositoryGateway, ICriarClienteUseCase } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
 import { ClienteDto, CriarClienteParamsDto, CriarClienteReturnDto } from "@gerencial/dtos";
 import { ClienteExistenteException } from "@gerencial/usecases";
 import { ClienteEntity } from "@gerencial/entities";
 
-export class CriarClienteUseCase {
+export class CriarClienteUseCase implements ICriarClienteUseCase{
 
     constructor( 
         private clienteRepositoryGateway: IClienteRepositoryGateway,

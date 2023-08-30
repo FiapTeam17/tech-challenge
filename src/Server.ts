@@ -8,6 +8,7 @@ import "./config/HttpExceptionFilter";
 import {index} from "./config";
 import * as gerencial from "@gerencial/api";
 import * as pedido from "@pedido/api";
+import * as pagamento from "@pagamento/api";
 
 @Configuration({
   ...index,
@@ -23,7 +24,7 @@ import * as pedido from "@pedido/api";
       ...Object.values(pedido)
     ],
     "/pagamento": [
-      //...Object.values(pagamento)
+      ...Object.values(pagamento)
     ],
   },
   swagger: [

@@ -1,5 +1,5 @@
 import { Optional } from "typescript-optional";
-import { ProdutoCategoriaEnum } from "../types";
+import { ProdutoCategoriaEnum } from "../../types";
 import { ProdutoDto } from "@gerencial/dtos";
 
 export const IProdutoRepositoryGateway: unique symbol = Symbol("IProdutoRepositoryGateway");

@@ -1,6 +1,11 @@
 import { DataSource } from "typeorm";
 import { Logger } from "@tsed/logger";
-import { IClienteRepositoryGateway } from "@gerencial/interfaces";
+import {
+  IAlterarClienteUseCase,
+  IClienteRepositoryGateway,
+  ICriarClienteUseCase,
+  IObterClienteUseCase
+} from "@gerencial/interfaces";
 import { AlterarClienteUseCase, CriarClienteUseCase, ObterClienteUseCase } from "@gerencial/usecases";
 import { ClienteMySqlRepositoryGateway } from "@gerencial/gateways";
 import {
@@ -14,9 +19,9 @@ import {
 
 export class ClienteController {
   private readonly clienteRepositoryGateway: IClienteRepositoryGateway;
-  private readonly obterClienteUseCase: ObterClienteUseCase;
-  private readonly criarClienteUseCase: CriarClienteUseCase;
-  private readonly alterarClienteUseCase: AlterarClienteUseCase;
+  private readonly obterClienteUseCase: IObterClienteUseCase;
+  private readonly criarClienteUseCase: ICriarClienteUseCase;
+  private readonly alterarClienteUseCase: IAlterarClienteUseCase;
   constructor(
     private dataSource: DataSource,
     private logger: Logger

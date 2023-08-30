@@ -1,22 +1,34 @@
 import { Logger } from "@tsed/common";
 import { DataSource } from "typeorm";
 import {
+  IAlterarProdutoUseCase,
+  ICriarProdutoUseCase,
+  IExcluirProdutoUseCase,
+  IObterProdutoUseCase,
+  IProdutoRepositoryGateway
+} from "@gerencial/interfaces";
+import {
+  AlterarProdutoUseCase,
+  CriarProdutoUseCase,
+  ExcluirProdutoUseCase,
+  ObterProdutoUseCase
+} from "@gerencial/usecases";
+import { ProdutoMySqlRepositoryGateway } from "@gerencial/gateways";
+import {
   AlterarProdutoParamsDto,
   AlterarProdutoReturnDto,
   CriarProdutoParamsDto,
   CriarProdutoReturnDto,
   ProdutoDto
-} from "../dtos";
-import { IProdutoRepositoryGateway } from "../interfaces";
-import { ProdutoMySqlRepositoryGateway } from "../gateways";
-import { AlterarProdutoUseCase, CriarProdutoUseCase, ExcluirProdutoUseCase, ObterProdutoUseCase } from "../usecases";
+} from "@gerencial/dtos";
+
 
 export class ProdutoController {
   private readonly produtoRepositoryGateway: IProdutoRepositoryGateway;
-  private readonly obterProdutoUseCase: ObterProdutoUseCase;
-  private readonly criarProdutoUseCase: CriarProdutoUseCase;
-  private readonly alterarProdutoUseCase: AlterarProdutoUseCase;
-  private readonly excluirProdutoUseCase: ExcluirProdutoUseCase;
+  private readonly obterProdutoUseCase: IObterProdutoUseCase;
+  private readonly criarProdutoUseCase: ICriarProdutoUseCase;
+  private readonly alterarProdutoUseCase: IAlterarProdutoUseCase;
+  private readonly excluirProdutoUseCase: IExcluirProdutoUseCase;
 
   constructor(
     private dataSource: DataSource,
