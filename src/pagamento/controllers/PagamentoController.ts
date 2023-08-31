@@ -6,9 +6,8 @@ import { StatusPagamento } from "@pagamento/types";
 import {
   IAtualizarStatusPagamentoUseCase,
   IConfirmarPagamentoUseCase,
-  IObterPagamentoUseCase,
-  IPagamentoExternoServiceGateway,
-  IPagamentoRepositoryGateway,
+  IObterPagamentoUseCase, IPagamentoMpServiceHttpGateway,
+  IPagamentoRepositoryGateway
 } from "@pagamento/interfaces";
 import { PagamentoMySqlRepositoryGateway } from "@pagamento/gateways";
 import { AtualizarStatusPagamentoUseCase, ConfirmarPagamentoUseCase, ObterPagamentoUseCase } from "@pagamento/usecases";
@@ -23,7 +22,7 @@ export class PagamentoController {
   private readonly atualizarStatusPedidoUseCase: IAtualizarStatusPedidoUseCase;
 
   private readonly pagamentoRepositoryGateway: IPagamentoRepositoryGateway;
-  private readonly pagamentoMpServiceHttpGateway: IPagamentoExternoServiceGateway;
+  private readonly pagamentoMpServiceHttpGateway: IPagamentoMpServiceHttpGateway;
   private readonly obterPagamentoUseCase: IObterPagamentoUseCase;
   private readonly atualizarStatusPagamentoUseCase: IAtualizarStatusPagamentoUseCase;
   private readonly confirmarPagamentoUseCase: IConfirmarPagamentoUseCase;
