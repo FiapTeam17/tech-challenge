@@ -1,4 +1,3 @@
-import { Optional } from "typescript-optional";
 import { PedidoEntity } from "@pedido/entities";
 import { StatusPagamento } from "@pagamento/types";
 
@@ -7,20 +6,24 @@ export class PagamentoEntity {
     constructor(
         readonly id?: number,
         private pedido?: PedidoEntity,
-        private status?: StatusPagamento,
+        private status?: StatusPagamento
     ) {
     }
 
-    static mapStatus(statusPagamento: string): Optional<StatusPagamento> {
+    static mapStatus(statusPagamento: string): StatusPagamento {
         switch (statusPagamento) {
-            case "pending":
-                return Optional.of(StatusPagamento.PENDENTE);
+            case "cancelled":
+                return StatusPagamento.CANCELADO;
+            case "refunded":
+                return StatusPagamento.CANCELADO;
+            case "charged_back":
+                return StatusPagamento.CANCELADO;
             case "approved":
-                return Optional.of(StatusPagamento.PAGO);
+                return StatusPagamento.PAGO;
             case "rejected":
-                return Optional.of(StatusPagamento.REJEITADO);
+                return StatusPagamento.REJEITADO;
             default:
-                return Optional.empty();
+                return StatusPagamento.PENDENTE;
         }
     }
 }

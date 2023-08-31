@@ -1,6 +1,5 @@
 import {
-    IConfirmarPagamentoUseCase,
-    IPagamentoExternoServiceGateway,
+    IConfirmarPagamentoUseCase, IPagamentoMpServiceHttpGateway,
     IPagamentoRepositoryGateway
 } from "@pagamento/interfaces";
 import { IAtualizarStatusPedidoUseCase } from "@pedido/interfaces";
@@ -14,11 +13,12 @@ import { Logger } from "@tsed/logger";
 export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
     constructor(
-        private pagamentoMpServiceHttpGateway: IPagamentoExternoServiceGateway,
+        private pagamentoMpServiceHttpGateway: IPagamentoMpServiceHttpGateway,
         private atualizarStatusPedidoUseCase: IAtualizarStatusPedidoUseCase,
         private pagamentoRepositoryGateway: IPagamentoRepositoryGateway,
         private logger: Logger
     ) {
+
     }
 
     async confirmar(identificadorPagamento: string, statusPagamento: string): Promise<void> {
@@ -29,7 +29,7 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
             throw new PedidoNotFoundException();
         }
         const pagamentoDto = pagamento.get();
-        pagamentoDto.status = PagamentoEntity.mapStatus(statusPagamento).get();
+        pagamentoDto.status = PagamentoEntity.mapStatus(statusPagamento);
         await this.pagamentoRepositoryGateway.atualizarStatus(pagamentoDto);
         if (pagamentoDto.status === StatusPagamento.PAGO) {
             await this.atualizarStatusPedidoUseCase.atualizarStatus(pagamentoDto.pedidoId as number, StatusPedido.RECEBIDO);
