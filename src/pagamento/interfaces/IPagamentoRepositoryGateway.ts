@@ -7,6 +7,6 @@ export interface IPagamentoRepositoryGateway {
     criar(dto: PagamentoDto): Promise<number | undefined>;
     atualizarStatus(pagamento: PagamentoDto): Promise<void>;
     obterPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>>;
-    obterPorPedidoIdEIdentificador(pedidoId: number, identificador: string): Promise<Optional<PagamentoDto>>;
-    obterPorIdentificador(identificador: string): Promise<Optional<PagamentoDto>>;
+    obterPorPedidoIdEIdentificador(pedidoId: number, codigoPagamento: string): Promise<Optional<PagamentoDto>>;
+    obterPorIdentificador(codigoPagamento: string): Promise<Optional<PagamentoDto>>;
 }

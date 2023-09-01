@@ -11,9 +11,9 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
     protected pagamentoRepository: Repository<PagamentoModel>;
 
     constructor(
-      private dataSource: DataSource,
-      private logger: Logger
-    ){
+        private dataSource: DataSource,
+        private logger: Logger
+    ) {
         this.pagamentoRepository = this.dataSource.getRepository(PagamentoModel);
     }
 

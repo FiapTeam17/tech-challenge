@@ -11,9 +11,9 @@ export class AtualizarStatusPagamentoUseCase implements IAtualizarStatusPagament
         private logger: Logger) {
     }
 
-    async atualizarStatus(pedidoId: number, identificador: string, status: StatusPagamento): Promise<void> {
+    async atualizarStatus(pedidoId: number, codigoPagamento: string, status: StatusPagamento): Promise<void> {
         this.logger.trace("Start id={}", pedidoId);
-        const pagamento: Optional<PagamentoDto> = await this.pagamentoRepositoryGateway.obterPorPedidoIdEIdentificador(pedidoId, identificador);
+        const pagamento: Optional<PagamentoDto> = await this.pagamentoRepositoryGateway.obterPorPedidoIdEIdentificador(pedidoId, codigoPagamento);
         if (pagamento.isEmpty()) {
             this.logger.warn("Pedido id={} não encontrado", pedidoId);
             throw new PedidoNotFoundException();

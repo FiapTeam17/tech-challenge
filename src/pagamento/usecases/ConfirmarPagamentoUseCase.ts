@@ -21,11 +21,11 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
     }
 
-    async confirmar(identificadorPagamento: string, statusPagamento: string): Promise<void> {
-        this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento, statusPagamento);
-        const pagamento = await this.pagamentoRepositoryGateway.obterPorIdentificador(identificadorPagamento);
+    async confirmar(codigoPagamento: string, statusPagamento: string): Promise<void> {
+        this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", codigoPagamento, statusPagamento);
+        const pagamento = await this.pagamentoRepositoryGateway.obterPorIdentificador(codigoPagamento);
         if (pagamento.isEmpty()) {
-            this.logger.warn("Pagamento não encontrado. identificadorPagamento={}", identificadorPagamento);
+            this.logger.warn("Pagamento não encontrado. identificadorPagamento={}", codigoPagamento);
             throw new PedidoNotFoundException();
         }
         const pagamentoDto = pagamento.get();
@@ -37,12 +37,10 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
         this.logger.trace("End");
     }
 
-    async confirmarPagamentoMercadoPago(identificadorPagamento: string): Promise<void> {
-        this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", identificadorPagamento);
-        const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(identificadorPagamento);
-        //const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(identificadorPagamento);
+    async confirmarPagamentoMercadoPago(codigoPagamento: string): Promise<void> {
+        this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", codigoPagamento);
+        const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(codigoPagamento);
         const pagamentoMpDto = pagamentoMp.get();
-        await this.confirmar(identificadorPagamento, pagamentoMpDto.status.toLowerCase());
+        await this.confirmar(codigoPagamento, pagamentoMpDto.status.toLowerCase());
     }
-
 }
