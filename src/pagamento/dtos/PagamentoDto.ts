@@ -5,7 +5,8 @@ export class PagamentoDto {
         public readonly id?: number,
         public pedidoId?: number,
         private identificadorPagamentoExterno?: string,
-        public status?: StatusPagamento
+        public status?: StatusPagamento,
+        public qrCode?: string,
     ) {
     }
 

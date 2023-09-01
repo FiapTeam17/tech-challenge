@@ -5,82 +5,93 @@ import { PedidoCadastroDto, PedidoConsultaDto } from "@pedido/dtos";
 import { PedidoEntity, PedidoItemEntity, StatusPedido } from "@pedido/entities";
 import { ClienteEntity, ProdutoEntity } from "@gerencial/entities";
 import { IObterClienteUseCase, IObterProdutoUseCase } from "@gerencial/interfaces";
+import { IGerarQrCodeMpUseCase } from "@pagamento/interfaces/IGerarQrCodeMpUseCase";
+import { PagamentoDto, QrCodeRequestDto } from "@pagamento/dtos";
+import { ICriarPagamentoUseCase } from "@pagamento/interfaces/ICriarPagamentoUseCase";
+import { StatusPagamento } from "@pagamento/types";
 
-export class CriarPedidoUseCase implements ICriarPedidoUseCase{
+export class CriarPedidoUseCase implements ICriarPedidoUseCase {
 
-  constructor(
-    private pedidoRepositoryGateway: IPedidoRepositoryGateway,
-    private obterProdutoUseCase: IObterProdutoUseCase,
-    private obterClienteUseCase: IObterClienteUseCase,
-    private logger: Logger) { }
+    constructor(
+        private pedidoRepositoryGateway: IPedidoRepositoryGateway,
+        private obterProdutoUseCase: IObterProdutoUseCase,
+        private obterClienteUseCase: IObterClienteUseCase,
+        private gerarQrCodeMpUseCase: IGerarQrCodeMpUseCase,
+        private criarPagamentoUseCase: ICriarPagamentoUseCase,
+        private logger: Logger) { }
 
-  async criar(pedidoDto: PedidoCadastroDto): Promise<PedidoConsultaDto> {
-    this.logger.trace("Start pedido={}", pedidoDto);
+    async criar(pedidoDto: PedidoCadastroDto): Promise<PedidoConsultaDto> {
+        this.logger.trace("Start pedido={}", pedidoDto);
 
-    //TODO adicionar mapper
-    const pedido = this.dtoToDomain(pedidoDto);
+        //TODO adicionar mapper
+        const pedido = this.dtoToDomain(pedidoDto);
 
-    await this.verificaRemoveClienteInexistente(pedido);
-    await this.verificaExistenciaProduto(pedido);
+        await this.verificaRemoveClienteInexistente(pedido);
+        await this.verificaExistenciaProduto(pedido);
 
-    pedido.dataCadastro = new Date(Date.now());
-    pedido.setStatus(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO);
+        pedido.dataCadastro = new Date(Date.now());
+        pedido.setStatus(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO);
 
-    const id = await this.pedidoRepositoryGateway.criar(pedido.toPedidoDto());
-    if (id !== undefined) {
-      pedido.id = id;
-    }
-    this.logger.trace("End id={}", id);
-    return PedidoConsultaDto.getInstance(pedido.toPedidoDto());
-  }
+        const id = await this.pedidoRepositoryGateway.criar(pedido.toPedidoDto());
+        if (id !== undefined) {
+            pedido.id = id;
+        }
 
-  private async verificaRemoveClienteInexistente(pedido: PedidoEntity) {
-    const clienteId = pedido.cliente?.id;
-    if (clienteId !== undefined) {
-      const cliOp = await this.obterClienteUseCase.obterPorId(clienteId);
-      if (cliOp == undefined) {
-        pedido.removerCliente();
-      }
-    }
-  }
+        const qrCodeResponseDto = await this.gerarQrCodeMpUseCase.gerarQrCode(new QrCodeRequestDto());
 
-  private async verificaExistenciaProduto(pedido: PedidoEntity) {
-
-    if (pedido.itens === undefined || pedido.itens.length === 0) {
-      throw new ProdutoNotFoundException();
+        await this.criarPagamentoUseCase.criar(
+            new PagamentoDto(undefined, pedido.id, undefined, StatusPagamento.PENDENTE, qrCodeResponseDto.qr_data));
+        this.logger.trace("End id={}", id);
+        return PedidoConsultaDto.getInstance(pedido.toPedidoDto());
     }
 
-    for (let i = 0; i < pedido.itens.length; ++i) {
-      const item = pedido.itens[i];
-      const produto = item.produto;
-
-      if (produto === undefined) {
-        throw new ProdutoNotFoundException();
-      }
-
-      const produtoOp = await this.obterProdutoUseCase.obterPorId(produto.id as never);
-      if (produtoOp == undefined) {
-        this.logger.warn("Produto informado não existe. produto.id={}", produto.id)
-        throw new ProdutoNotFoundException();
-      }
-
-      item.valorUnitario = produtoOp.valor as never;
+    private async verificaRemoveClienteInexistente(pedido: PedidoEntity) {
+        const clienteId = pedido.cliente?.id;
+        if (clienteId !== undefined) {
+            const cliOp = await this.obterClienteUseCase.obterPorId(clienteId);
+            if (cliOp == undefined) {
+                pedido.removerCliente();
+            }
+        }
     }
 
-  }
+    private async verificaExistenciaProduto(pedido: PedidoEntity) {
 
-  private dtoToDomain(pedidoDto: PedidoCadastroDto): PedidoEntity{
-    let cliente = undefined;
-    if (pedidoDto.clienteId) {
-      cliente = new ClienteEntity(pedidoDto.clienteId);
+        if (pedido.itens === undefined || pedido.itens.length === 0) {
+            throw new ProdutoNotFoundException();
+        }
+
+        for (let i = 0; i < pedido.itens.length; ++i) {
+            const item = pedido.itens[i];
+            const produto = item.produto;
+
+            if (produto === undefined) {
+                throw new ProdutoNotFoundException();
+            }
+
+            const produtoOp = await this.obterProdutoUseCase.obterPorId(produto.id as never);
+            if (produtoOp == undefined) {
+                this.logger.warn("Produto informado não existe. produto.id={}", produto.id)
+                throw new ProdutoNotFoundException();
+            }
+
+            item.valorUnitario = produtoOp.valor as never;
+        }
+
     }
 
-    const pedido = new PedidoEntity(undefined, cliente, pedidoDto.observacao);
+    private dtoToDomain(pedidoDto: PedidoCadastroDto): PedidoEntity {
+        let cliente = undefined;
+        if (pedidoDto.clienteId) {
+            cliente = new ClienteEntity(pedidoDto.clienteId);
+        }
 
-    pedido.itens = pedidoDto.itens.map(i => {
-      return new PedidoItemEntity(undefined, pedido, new ProdutoEntity(i.produtoId), i.quantidade);
-    });
+        const pedido = new PedidoEntity(undefined, cliente, pedidoDto.observacao);
 
-    return pedido;
-  }
+        pedido.itens = pedidoDto.itens.map(i => {
+            return new PedidoItemEntity(undefined, pedido, new ProdutoEntity(i.produtoId), i.quantidade);
+        });
+
+        return pedido;
+    }
 }
