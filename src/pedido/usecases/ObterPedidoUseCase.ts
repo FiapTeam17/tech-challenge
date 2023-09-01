@@ -6,12 +6,12 @@ import { PedidoEntity } from "@pedido/entities";
 import { StatusPedidoEnumMapper } from "@pedido/types";
 import { IObterPagamentoUseCase } from "@pagamento/interfaces";
 
-export class ObterPedidoUseCase implements IObterPedidoUseCase{
+export class ObterPedidoUseCase implements IObterPedidoUseCase {
 
     constructor(
-      private pedidoRepositoryGateway: IPedidoRepositoryGateway,
-      private obterPagamentoUseCase: IObterPagamentoUseCase,
-      private logger: Logger
+        private pedidoRepositoryGateway: IPedidoRepositoryGateway,
+        private obterPagamentoUseCase: IObterPagamentoUseCase,
+        private logger: Logger
     ) {
     }
 
@@ -73,14 +73,13 @@ export class ObterPedidoUseCase implements IObterPedidoUseCase{
             return new PedidoPagamentoDto(idPedido, false);
         }
         const pedido = pedidoDto.get();
-        //chamar usecase do pagamento solicitando status do pagamento.
-        //criar um novo usecase de obter pagamento por pedido
         const pagamentos = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedido.id!);
         if (pagamentos.isEmpty() || pagamentos.get().length == 0) {
             this.logger.warn("Pagamento não encontrado.");
             return new PedidoPagamentoDto(pedido.id!, false);
         }
         this.logger.trace("End pedido={}", pedido.id);
-        return new PedidoPagamentoDto(pedido.id!, true);
+        const existeAlgumPagamentoPago = pagamentos.get().some(x => x.status === "PAGO");
+        return new PedidoPagamentoDto(pedido.id!, existeAlgumPagamentoPago);
     }
 }

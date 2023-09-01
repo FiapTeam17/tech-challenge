@@ -1,7 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { PedidoModel } from "@pedido/gateways";
 import { PagamentoDto } from "@pagamento/dtos";
-import { StatusPagamento } from "@pagamento/types";
 import { StatusPagamentoEnumMapper } from "@pagamento/types/StatusPagamentoEnumMapper";
 
 @Entity("Pagamento")
@@ -10,7 +9,7 @@ export class PagamentoModel {
     id?: number;
 
     @Column({
-        nullable: false
+        nullable: true
     })
     public codigoPagamento?: string;
 
@@ -18,9 +17,16 @@ export class PagamentoModel {
     pedido?: PedidoModel;
 
     @Column({
-        nullable: true
+        nullable: true,
+        length: 10
     })
-    public status: string;
+    public status?: string;
+
+    @Column({
+        nullable: true,
+        length: 300
+    })
+    public qrcode?: string;
 
     static getInstancia(pagamento: PagamentoDto): PagamentoModel {
         const pagamentoEntity = new PagamentoModel();
@@ -28,11 +34,12 @@ export class PagamentoModel {
         pagamentoEntity.codigoPagamento = pagamento.getIdentificadorPagamentoExterno();
         pagamentoEntity.pedido = { id: pagamento.pedidoId } as PedidoModel;
         pagamentoEntity.status = StatusPagamentoEnumMapper.enumParaString(pagamento.status);
+        pagamentoEntity.qrcode = pagamento.qrCode;
 
         return pagamentoEntity;
     }
 
     public getDto(): PagamentoDto {
-        return new PagamentoDto(this.id, this.pedido?.id, this.codigoPagamento, StatusPagamentoEnumMapper.stringParaEnum(this.status));
+        return new PagamentoDto(this.id, this.pedido?.id, this.codigoPagamento, StatusPagamentoEnumMapper.stringParaEnum(this.status), this.qrcode);
     }
 }

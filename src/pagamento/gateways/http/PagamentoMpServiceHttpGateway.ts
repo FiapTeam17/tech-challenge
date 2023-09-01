@@ -12,8 +12,8 @@ export class PagamentoMpServiceHttpGateway implements IPagamentoMpServiceHttpGat
     private readonly token = process.env.token || "TEST-8375344102018334-082012-842b3b0893d786059eed6e0694cc6acf-29575195";
 
     constructor(
-      private logger: Logger
-    ){
+        private logger: Logger
+    ) {
     }
 
     async obterPagamento(identificadorPagamento: string): Promise<Optional<PagamentoMercadoPagoDto>> {
@@ -37,9 +37,8 @@ export class PagamentoMpServiceHttpGateway implements IPagamentoMpServiceHttpGat
         }
     }
 
-    async criarQrCode(qrCodeDtoRequestDto: QrCodeRequestDto): Promise<Optional<QrCodeResponseDto>> {
+    async criarQrCode(qrCodeDtoRequestDto: QrCodeRequestDto): Promise<QrCodeResponseDto> {
         try {
-
             const config = {
                 method: 'post',
                 maxBodyLength: Infinity,
@@ -48,11 +47,11 @@ export class PagamentoMpServiceHttpGateway implements IPagamentoMpServiceHttpGat
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.token}`
                 },
-                data : qrCodeDtoRequestDto
+                data: qrCodeDtoRequestDto
             };
 
             this.logger.info("Try connect mercadopago. config={}", config);
-            const response = await axios.request<Optional<QrCodeResponseDto>>(config);
+            const response = await axios.request<QrCodeResponseDto>(config);
             this.logger.info("response={}", response);
             return response.data;
         } catch (error) {

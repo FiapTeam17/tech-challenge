@@ -6,7 +6,8 @@ export class PagamentoEntity {
     constructor(
         readonly id?: number,
         private pedido?: PedidoEntity,
-        private status?: StatusPagamento
+        private status?: StatusPagamento,
+        private qrcode?: string
     ) {
     }
 

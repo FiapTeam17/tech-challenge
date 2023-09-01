@@ -38,7 +38,7 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
             this.logger.trace("Start pedido={}", pagamento);
             const pagamentoId = pagamento.id as number;
             await this.pagamentoRepository.update(pagamentoId, {
-                status: pagamento!.status!.toString()
+                status: pagamento?.status?.toString()
             });
             this.logger.trace("End");
         } catch (e) {

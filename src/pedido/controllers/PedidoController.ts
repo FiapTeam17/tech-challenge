@@ -18,9 +18,14 @@ import { ObterClienteUseCase, ObterProdutoUseCase } from "@gerencial/usecases";
 import { ClienteMySqlRepositoryGateway, ProdutoMySqlRepositoryGateway } from "@gerencial/gateways";
 import { PedidoCadastroDto, PedidoConsultaDto, PedidoEmAndamentoDto, PedidoPagamentoDto } from "@pedido/dtos";
 import { StatusPedido } from "@pedido/entities";
-import { IObterPagamentoUseCase, IPagamentoRepositoryGateway } from "@pagamento/interfaces";
+import { IObterPagamentoUseCase, IPagamentoMpServiceHttpGateway, IPagamentoRepositoryGateway } from "@pagamento/interfaces";
 import { PagamentoMySqlRepositoryGateway } from "@pagamento/gateways";
 import { ObterPagamentoUseCase } from "@pagamento/usecases";
+import { IGerarQrCodeMpUseCase } from "@pagamento/interfaces/IGerarQrCodeMpUseCase";
+import { GerarQrCodeMpUseCase } from "@pagamento/usecases/GerarQrCodeMpUseCase";
+import { PagamentoMockServiceHttpGateway } from "@pagamento/gateways/http";
+import { ICriarPagamentoUseCase } from "@pagamento/interfaces/ICriarPagamentoUseCase";
+import { CriarPagamentoUseCase } from "@pagamento/usecases/CriarPagamentoUseCase";
 
 
 export class PedidoController {
@@ -38,6 +43,9 @@ export class PedidoController {
 
   private readonly pagamentoRepositoryGateway: IPagamentoRepositoryGateway;
   private readonly obterPagamentoUseCase: IObterPagamentoUseCase;
+  private readonly gerarQrCodeMpUseCase: IGerarQrCodeMpUseCase;
+  private readonly criarPagamentoUseCase: ICriarPagamentoUseCase;
+  private readonly pagamentoMpServiceHttpGateway: IPagamentoMpServiceHttpGateway;
 
   constructor(
     private dataSource: DataSource,
@@ -51,39 +59,42 @@ export class PedidoController {
 
     this.pagamentoRepositoryGateway = new PagamentoMySqlRepositoryGateway(this.dataSource, this.logger);
     this.obterPagamentoUseCase = new ObterPagamentoUseCase(this.pagamentoRepositoryGateway, this.logger);
+    this.pagamentoMpServiceHttpGateway = new PagamentoMockServiceHttpGateway(this.logger);
+    this.gerarQrCodeMpUseCase = new GerarQrCodeMpUseCase(this.pagamentoMpServiceHttpGateway, this.logger);
+    this.criarPagamentoUseCase = new CriarPagamentoUseCase(this.pagamentoRepositoryGateway, this.logger);
 
     this.pedidoRepositoryGateway = new PedidoMySqlRepositoryGateway(dataSource, logger);
     this.obterPedidoUseCase = new ObterPedidoUseCase(this.pedidoRepositoryGateway, this.obterPagamentoUseCase, logger);
     this.criarPedidoUseCase = new CriarPedidoUseCase(this.pedidoRepositoryGateway,
-      this.obterProdutoUseCase, this.obterClienteUseCase, logger);
+      this.obterProdutoUseCase, this.obterClienteUseCase, this.gerarQrCodeMpUseCase, this.criarPagamentoUseCase, logger);
     this.atualizarStatusPedidoUseCase = new AtualizarStatusPedidoUseCase(this.pedidoRepositoryGateway, logger);
   }
 
-  async obterPorId(id: number): Promise<PedidoConsultaDto>{
+  async obterPorId(id: number): Promise<PedidoConsultaDto> {
     return await this.obterPedidoUseCase.obterPorId(id);
   }
 
-  async obterEmAndamento(): Promise<PedidoEmAndamentoDto[]>{
+  async obterEmAndamento(): Promise<PedidoEmAndamentoDto[]> {
     return await this.obterPedidoUseCase.obterEmAndamento();
   }
 
-  async obterPorStatusAndIdentificadorPagamento(status: string, identificadorPagamento: string): Promise<PedidoConsultaDto[]>{
+  async obterPorStatusAndIdentificadorPagamento(status: string, identificadorPagamento: string): Promise<PedidoConsultaDto[]> {
     return await this.obterPedidoUseCase.obterPorStatusAndIdentificadorPagamento(status, identificadorPagamento);
   }
 
-  async obterPorIdentificadorPagamento(identificadorPagamento: string): Promise<PedidoConsultaDto>{
+  async obterPorIdentificadorPagamento(identificadorPagamento: string): Promise<PedidoConsultaDto> {
     return await this.obterPedidoUseCase.obterPorIdentificadorPagamento(identificadorPagamento);
   }
 
-  async consultaStatusPagamento(idPedido: number): Promise<PedidoPagamentoDto>{
+  async consultaStatusPagamento(idPedido: number): Promise<PedidoPagamentoDto> {
     return await this.obterPedidoUseCase.consultaStatusPagamento(idPedido);
   }
 
-  async criar(pedido: PedidoCadastroDto): Promise<PedidoConsultaDto>{
+  async criar(pedido: PedidoCadastroDto): Promise<PedidoConsultaDto> {
     return await this.criarPedidoUseCase.criar(pedido);
   }
 
-  async atualizarStatus(pedidoId: number, status: StatusPedido): Promise<void>{
+  async atualizarStatus(pedidoId: number, status: StatusPedido): Promise<void> {
     return await this.atualizarStatusPedidoUseCase.atualizarStatus(pedidoId, status);
   }
 }

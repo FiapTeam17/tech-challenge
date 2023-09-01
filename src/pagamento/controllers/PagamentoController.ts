@@ -47,7 +47,7 @@ export class PagamentoController {
   }
 
   async atualizarStatus(pedidoId: number, codigoPagamento: string, status: StatusPagamento): Promise<void> {
-    this.atualizarStatusPagamentoUseCase.atualizarStatus(pedidoId, codigoPagamento, status);
+    await this.atualizarStatusPagamentoUseCase.atualizarStatus(pedidoId, codigoPagamento, status);
   }
 
   async confirmar(codigoPagamento: string, statusPagamento: string): Promise<void> {
