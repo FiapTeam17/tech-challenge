@@ -12,5 +12,5 @@ export const IPagamentoMpServiceHttpGateway: unique symbol = Symbol("IPagamentoM
 
 export interface IPagamentoMpServiceHttpGateway {
     criarQrCode(qrCodeDtoRequestDto: QrCodeRequestDto): Promise<Optional<QrCodeResponseDto>>
-    obterPagamento(identificadorPagamento: string): Promise<Optional<PagamentoMercadoPagoDto>>;
+    obterPagamento(codigoPagamento: string): Promise<Optional<PagamentoMercadoPagoDto>>;
 }
