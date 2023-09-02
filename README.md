@@ -63,3 +63,4 @@ Body:
         PATCH /pedido/pedidos/{id}/status
 
     # Integração com Mercado Pago
+        A integração está na classe PagamentoMpServiceHttpGateway, como não foi realizar a integração, por falta de endpoint externo a implementação está nessa classe (chamadas das apis)
