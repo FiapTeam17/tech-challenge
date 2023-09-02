@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sgr-configmap
+data:
+  database_name: "sgr_database"
+  database_password: "senha"
+  database_port: "3306"
+  mercado_pago_token: "TEST-8375344102018334-082012-842b3b0893d786059eed6e0694cc6acf-29575195"
