@@ -15,14 +15,14 @@ export class PagamentoMockServiceHttpGateway implements IPagamentoMpServiceHttpG
         const crypto = require('crypto');
         qrCodeDtoRequestDto.notification_url = "";
         const qrCodeMockResponseDto = new QrCodeResponseDto();
-        qrCodeMockResponseDto.qr_data = crypto.randomBytes(8).toString('hex')
+        qrCodeMockResponseDto.qr_data = crypto.randomBytes(8).toString('hex');
         return Promise.resolve(qrCodeMockResponseDto);
     }
 
     obterPagamento(codigoPagamento: string): Promise<Optional<PagamentoMercadoPagoDto>> {
         const pagamentoMockMercadoPagoDto = new PagamentoMercadoPagoDto();
         pagamentoMockMercadoPagoDto.status = "approved";
-        pagamentoMockMercadoPagoDto.id = parseInt(codigoPagamento);
+        pagamentoMockMercadoPagoDto.id = codigoPagamento;
         return Promise.resolve(Optional.ofNullable(pagamentoMockMercadoPagoDto));
     }
 }

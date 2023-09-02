@@ -42,7 +42,7 @@ export class CriarPedidoUseCase implements ICriarPedidoUseCase {
         await this.criarPagamentoUseCase.criar(
             new PagamentoDto(undefined, pedido.id, undefined, StatusPagamento.PENDENTE, qrCodeResponseDto.qr_data));
         this.logger.trace("End id={}", id);
-        return PedidoConsultaDto.getInstance(pedido.toPedidoDto());
+        return PedidoConsultaDto.getInstance(pedido.toPedidoQrDataDto(qrCodeResponseDto.qr_data));
     }
 
     private async verificaRemoveClienteInexistente(pedido: PedidoEntity) {

@@ -1,3 +1,4 @@
+import { PagamentoMercadoPagoDto } from './../dtos/PagamentoMercadoPagoDto';
 import {
     IConfirmarPagamentoUseCase, IPagamentoMpServiceHttpGateway,
     IPagamentoRepositoryGateway
@@ -8,7 +9,6 @@ import { PagamentoEntity } from "@pagamento/entities";
 import { StatusPagamento } from "@pagamento/types";
 import { StatusPedido } from "@pedido/entities";
 import { Logger } from "@tsed/logger";
-
 
 export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
@@ -38,9 +38,28 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
     }
 
     async confirmarPagamentoMercadoPago(codigoPagamento: string): Promise<void> {
-        this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", codigoPagamento);
+        this.logger.trace("Start identificadorPagamento={}", codigoPagamento);
         const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(codigoPagamento);
         const pagamentoMpDto = pagamentoMp.get();
         await this.confirmar(codigoPagamento, pagamentoMpDto.status.toLowerCase());
+    }
+
+    async confirmarPagamentoMockMercadoPago(pedidoId: number): Promise<void> {
+        this.logger.trace("Start pedidoId={}", pedidoId);
+        const crypto = require('crypto');
+        const pagamentoDtoOp = await this.pagamentoRepositoryGateway.obterPorPedidoId(pedidoId);
+        if (pagamentoDtoOp.isEmpty()) {
+            this.logger.warn("Pagamento não encontrado. pedidoId={}", pedidoId);
+            throw new PedidoNotFoundException();
+        }
+        const pagamentoDto = pagamentoDtoOp.get();
+        const pagamentoDtoUltimoRegistro = pagamentoDto[pagamentoDto.length - 1];
+        pagamentoDtoUltimoRegistro.codigoPagamento = crypto.randomBytes(8).join('');
+        await this.pagamentoRepositoryGateway.atualizarCodigoPagamento(pagamentoDtoUltimoRegistro);
+        const pagamentoMercadoPagoDto = new PagamentoMercadoPagoDto();
+        pagamentoMercadoPagoDto.id = pagamentoDtoUltimoRegistro.codigoPagamento as string;
+        const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(pagamentoMercadoPagoDto.id.toString());
+        const pagamentoMpDto = pagamentoMp.get();
+        await this.confirmar(pagamentoMpDto.id, pagamentoMpDto.status);
     }
 }

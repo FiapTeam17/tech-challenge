@@ -6,6 +6,7 @@ export const IPagamentoRepositoryGateway: unique symbol = Symbol("IPagamentoRepo
 export interface IPagamentoRepositoryGateway {
     criar(dto: PagamentoDto): Promise<number | undefined>;
     atualizarStatus(pagamento: PagamentoDto): Promise<void>;
+    atualizarCodigoPagamento(pagamento: PagamentoDto): Promise<void>;
     obterPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>>;
     obterPorPedidoIdEIdentificador(pedidoId: number, codigoPagamento: string): Promise<Optional<PagamentoDto>>;
     obterPorIdentificador(codigoPagamento: string): Promise<Optional<PagamentoDto>>;

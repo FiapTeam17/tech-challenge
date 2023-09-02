@@ -5,13 +5,13 @@ import { PagamentoDto } from "@pagamento/dtos";
 
 export class ObterPagamentoUseCase implements IObterPagamentoUseCase {
 
-    constructor(
-      private pagamentoRepositoryGateway: IPagamentoRepositoryGateway,
-      private logger: Logger
-    ) {
-    }
+  constructor(
+    private pagamentoRepositoryGateway: IPagamentoRepositoryGateway,
+    private logger: Logger
+  ) {
+  }
 
-    async obtemPagamentoPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
-        return await this.pagamentoRepositoryGateway.obterPorPedidoId(pedidoId);
-    }
+  async obtemPagamentoPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
+    return await this.pagamentoRepositoryGateway.obterPorPedidoId(pedidoId);
+  }
 }

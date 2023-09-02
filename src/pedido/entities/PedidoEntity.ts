@@ -168,6 +168,22 @@ export class PedidoEntity {
         );
     }
 
+    public toPedidoQrDataDto(qrDataMercadoPago: string): PedidoDto {
+
+        const itens = this.itens?.map(i => i.toPeditoItemDto()) || [];
+
+        return new PedidoDto(
+            this.status as never,
+            this.dataCadastro as never,
+            itens,
+            this.observacao,
+            this.cliente?.toClienteDto(),
+            this.dataConclusao,
+            this.id,
+            qrDataMercadoPago
+        );
+    }
+
     static getInstance(pedidoDto: PedidoDto): PedidoEntity {
 
         let cliente = undefined;

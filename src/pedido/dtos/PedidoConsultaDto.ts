@@ -57,13 +57,19 @@ export class PedidoConsultaDto {
     @CollectionOf(PedidoItemConsultaDto)
     public readonly itens: PedidoItemConsultaDto[];
 
+    @Description("QrCode do Mercado Pago")
+    @Example("00020101021243650016COM.MERCADOLIBRE02013063638f1192a-5fd1-4180-a180-8bcae3556bc35204000053039865802BR5925IZABEL AAAA DE MELO6007BARUERI62070503***63040B6D")
+    @Property()
+    public readonly qrCodeMercadoPago?: string;
+
     static getInstance(pedido: PedidoDto): PedidoConsultaDto {
         return {
             id: pedido.id,
             observacao: pedido.observacao,
             clienteId: pedido.cliente?.id,
             status: pedido.status,
-            itens: pedido.itens?.map(i => PedidoConsultaDto.getItemInstance(i))
+            itens: pedido.itens?.map(i => PedidoConsultaDto.getItemInstance(i)),
+            qrCodeMercadoPago: pedido.qrDataMercadoPago
         } as PedidoConsultaDto;
     }
 

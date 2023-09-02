@@ -48,6 +48,21 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
         }
     }
 
+    async atualizarCodigoPagamento(pagamento: PagamentoDto): Promise<void> {
+        try {
+            this.logger.trace("Start pedido={}", pagamento);
+            const pagamentoId = pagamento.id as number;
+            await this.pagamentoRepository.update(pagamentoId, {
+                codigoPagamento: pagamento?.codigoPagamento?.toString()
+            });
+            this.logger.trace("End");
+        } catch (e) {
+
+            this.logger.error(e);
+            throw new ErrorToAccessDatabaseException();
+        }
+    }
+
     async obterPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
         try {
             this.logger.trace("Start pagamento={}", pedidoId);
