@@ -7,6 +7,7 @@ export class ConfirmacaoPagamentoMpJson {
     live_mode: string
     type: string
     user_id: number
+    pedidoId?: number
     data: Data
 }
 

@@ -31,7 +31,7 @@ export class PagamentoModel {
     static getInstancia(pagamento: PagamentoDto): PagamentoModel {
         const pagamentoEntity = new PagamentoModel();
         pagamentoEntity.id = pagamento.id;
-        pagamentoEntity.codigoPagamento = pagamento.getIdentificadorPagamentoExterno();
+        pagamentoEntity.codigoPagamento = pagamento.codigoPagamento;
         pagamentoEntity.pedido = { id: pagamento.pedidoId } as PedidoModel;
         pagamentoEntity.status = StatusPagamentoEnumMapper.enumParaString(pagamento.status);
         pagamentoEntity.qrcode = pagamento.qrCode;

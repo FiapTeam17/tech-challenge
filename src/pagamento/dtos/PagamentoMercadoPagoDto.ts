@@ -1,5 +1,5 @@
 export class PagamentoMercadoPagoDto {
-    id: number
+    id: string
     date_created: string
     date_approved: string
     date_last_updated: string

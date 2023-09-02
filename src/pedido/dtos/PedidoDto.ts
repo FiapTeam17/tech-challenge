@@ -9,7 +9,7 @@ export class PedidoItemDto {
     public readonly valorUnitario: number,
     public readonly valorTotal: number,
     public readonly pedidoId?: number,
-    public readonly id?: number
+    public readonly id?: number,
   ) {
   }
 
@@ -23,7 +23,8 @@ export class PedidoDto {
     public readonly observacao?: string,
     public readonly cliente?: ClienteDto,
     public readonly dataConclusao?: Date,
-    public readonly id?: number
+    public readonly id?: number,
+    public readonly qrDataMercadoPago?: string,
   ) {
   }
 }
