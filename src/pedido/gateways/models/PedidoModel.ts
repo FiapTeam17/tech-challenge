@@ -68,7 +68,7 @@ export class PedidoModel {
             this.dataCadastro,
             itens,
             this.observaco,
-            this.cliente?.getClientDto(),
+            this.cliente,
             this.dataConclusao,
             this.id
         );

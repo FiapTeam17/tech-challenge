@@ -5,6 +5,7 @@ import { PedidoNotFoundException } from "./exceptions/PedidoNotFoundException";
 import { PedidoEntity } from "@pedido/entities";
 import { StatusPedidoEnumMapper } from "@pedido/types";
 import { IObterPagamentoUseCase } from "@pagamento/interfaces";
+import { StatusPagamento } from "@pagamento/types";
 
 export class ObterPedidoUseCase implements IObterPedidoUseCase {
 
@@ -67,19 +68,19 @@ export class ObterPedidoUseCase implements IObterPedidoUseCase {
 
     async consultaStatusPagamento(idPedido: number): Promise<PedidoPagamentoDto> {
         this.logger.trace("Start idPedido={}", idPedido);
-        const pedidoDto = await this.pedidoRepositoryGateway.obterPorId(idPedido);
-        if (pedidoDto.isEmpty()) {
+        const pedidoOp = await this.pedidoRepositoryGateway.obterPorId(idPedido);
+        if (pedidoOp.isEmpty()) {
             this.logger.warn("Pedido não encontrado.");
             return new PedidoPagamentoDto(idPedido, false);
         }
-        const pedido = pedidoDto.get();
-        const pagamentos = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedido.id!);
-        if (pagamentos.isEmpty() || pagamentos.get().length == 0) {
+        const pedidoDto = pedidoOp.get();
+        const pagamentosOp = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedidoDto.id!);
+        if (pagamentosOp.isEmpty() || pagamentosOp.get().length == 0) {
             this.logger.warn("Pagamento não encontrado.");
-            return new PedidoPagamentoDto(pedido.id!, false);
+            return new PedidoPagamentoDto(pedidoDto.id!, false);
         }
-        this.logger.trace("End pedido={}", pedido.id);
-        const existeAlgumPagamentoPago = pagamentos.get().some(x => x.status === "PAGO");
-        return new PedidoPagamentoDto(pedido.id!, existeAlgumPagamentoPago);
+        this.logger.trace("End pedido={}", pedidoDto.id);
+        const existeAlgumPagamentoPago = pagamentosOp.get().some(x => x.status === StatusPagamento.PAGO);
+        return new PedidoPagamentoDto(pedidoDto.id!, existeAlgumPagamentoPago);
     }
 }

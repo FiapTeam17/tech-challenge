@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { ProdutoDto } from "@gerencial/dtos";
+import { ProdutoCategoriaEnumMapper } from "@gerencial/types";
 
 @Entity("Produto")
 export class ProdutoModel {
@@ -35,7 +36,7 @@ export class ProdutoModel {
     @Column({
         nullable: false
     })
-    categoriaId?: number;
+    categoria?: string;
 
     constructor(produto?: ProdutoDto){
         if(produto){
@@ -45,12 +46,12 @@ export class ProdutoModel {
             this.nome = produto.nome;
             this.descricao = produto.descricao;
             this.valor = produto.valor;
-            this.imagem = undefined;
-            this.categoriaId = produto.categoriaId;
+            this.imagem = produto.imagem;
+            this.categoria = ProdutoCategoriaEnumMapper.enumParaString(produto.categoria);
         }
     }
 
     public getProdutoDto(): ProdutoDto {
-        return new ProdutoDto(this.id, this.nome, this.descricao, this.valor, this.categoriaId);
+        return new ProdutoDto(this.id, this.nome, this.descricao, this.valor, ProdutoCategoriaEnumMapper.stringParaEnum(this.categoria), this.imagem);
     }
 }

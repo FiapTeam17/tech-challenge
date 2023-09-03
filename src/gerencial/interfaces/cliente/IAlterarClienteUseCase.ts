@@ -1,7 +1,8 @@
-import { AlterarClienteParamsDto, AlterarClienteReturnDto } from "@gerencial/dtos";
+import { ClienteRetornoDto } from "@gerencial/dtos";
+import { ClienteAlterarDto } from "@gerencial/dtos/cliente/ClienteAlterarDto";
 
 export const IAlterarClienteUseCase: unique symbol = Symbol("IAlterarClienteUseCase");
 
 export interface IAlterarClienteUseCase {
-    alterar(requestDto: AlterarClienteParamsDto): Promise<AlterarClienteReturnDto>;
+    alterar(requestDto: ClienteAlterarDto): Promise<ClienteRetornoDto>;
 }

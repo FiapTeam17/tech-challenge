@@ -89,7 +89,9 @@ export class CriarPedidoUseCase implements ICriarPedidoUseCase {
         const pedido = new PedidoEntity(undefined, cliente, pedidoDto.observacao);
 
         pedido.itens = pedidoDto.itens.map(i => {
-            return new PedidoItemEntity(undefined, pedido, new ProdutoEntity(i.produtoId), i.quantidade);
+            return new PedidoItemEntity(undefined, pedido,
+              new ProdutoEntity(i.produtoId),
+              i.quantidade);
         });
 
         return pedido;

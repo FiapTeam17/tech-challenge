@@ -1,7 +1,7 @@
-import { CriarClienteParamsDto, CriarClienteReturnDto } from "@gerencial/dtos";
+import { ClienteCriarDto, ClienteRetornoDto } from "@gerencial/dtos";
 
 export const ICriarClienteUseCase: unique symbol = Symbol("ICriarClienteUseCase");
 
 export interface ICriarClienteUseCase {
-    criar(dto: CriarClienteParamsDto): Promise<CriarClienteReturnDto>;
+    criar(dto: ClienteCriarDto): Promise<ClienteRetornoDto>;
 }

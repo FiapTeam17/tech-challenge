@@ -58,6 +58,7 @@ Body:
         POST /pagamentos/confirmarMockMercadoPago
 
     # Lista de Pedidos
+        POST /pedido/pedidos/andamento
 
     # Atualizar status do pedido
         PATCH /pedido/pedidos/{id}/status

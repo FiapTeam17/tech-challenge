@@ -1,9 +1,9 @@
-import { ClienteDto } from "@gerencial/dtos";
+import { ClienteRetornoDto } from "@gerencial/dtos";
 import { ClienteValidacaoException } from "@gerencial/usecases";
 
 export class ClienteEntity {
     constructor(
-        readonly id?: number,
+      readonly id?: number,
         readonly nome?: string,
         readonly cpf?: string,
         readonly email?: string
@@ -18,12 +18,12 @@ export class ClienteEntity {
         }
     }
 
-    toClienteDto(): ClienteDto{
-        return new ClienteDto(
-          this.id,
+    toClienteDto(): ClienteRetornoDto{
+        return new ClienteRetornoDto(
           this.nome,
           this.cpf,
-          this.email
+          this.email,
+          this.id,
         );
     }
 }

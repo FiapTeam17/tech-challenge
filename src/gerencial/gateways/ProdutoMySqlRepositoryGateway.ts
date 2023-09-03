@@ -5,8 +5,8 @@ import { ErrorToAccessDatabaseException } from "@common";
 import { IProdutoRepositoryGateway } from "@gerencial/interfaces";
 import { ProdutoModel } from "@gerencial/gateways/models";
 import { ExclusaoProdutoAssociadoPedidoException } from "@gerencial/usecases";
-import { ProdutoDto } from "@gerencial/dtos";
-import { ProdutoCategoriaEnum } from "@gerencial/types";
+import { ProdutoAlterarDto, ProdutoCriarDto, ProdutoRetornoDto } from "@gerencial/dtos";
+import { ProdutoCategoriaEnum, ProdutoCategoriaEnumMapper } from "@gerencial/types";
 
 export class ProdutoMySqlRepositoryGateway implements IProdutoRepositoryGateway {
 
@@ -37,13 +37,13 @@ export class ProdutoMySqlRepositoryGateway implements IProdutoRepositoryGateway 
         }
     }
 
-    async obterPorId(id: number): Promise<Optional<ProdutoDto>> {
+    async obterPorId(id: number): Promise<Optional<ProdutoRetornoDto>> {
         try {
             this.logger.trace("Start id={}", id)
             const produtoEntity = await this.produtoRepository.findOneBy({ id: Equal(id) });
 
 
-            let produtoOp: Optional<ProdutoDto> = Optional.empty();
+            let produtoOp: Optional<ProdutoRetornoDto> = Optional.empty();
             if (produtoEntity !== null) {
                 produtoOp = Optional.of(produtoEntity.getProdutoDto());
             }
@@ -57,13 +57,13 @@ export class ProdutoMySqlRepositoryGateway implements IProdutoRepositoryGateway 
         }
     }
 
-    async obterPorCategoria(categoria: ProdutoCategoriaEnum): Promise<ProdutoDto[]> {
+    async obterPorCategoria(categoria: ProdutoCategoriaEnum): Promise<ProdutoRetornoDto[]> {
         try {
-            this.logger.trace("Start categoria={}", categoria)
-            const produtosEntities = await this.produtoRepository.findBy({ categoriaId: Equal(categoria) });
+            const produtosEntities = await this.produtoRepository.findBy({
+                categoria: Equal(ProdutoCategoriaEnumMapper.enumParaString(categoria))
+            });
             const produtos = produtosEntities.map(pe => pe.getProdutoDto());
 
-            this.logger.trace("End produtos={}", produtos)
             return produtos;
 
         } catch (e) {
@@ -71,13 +71,11 @@ export class ProdutoMySqlRepositoryGateway implements IProdutoRepositoryGateway 
             throw new ErrorToAccessDatabaseException();
         }
     }
-    async criar(dto: ProdutoDto): Promise<number> {
+    async criar(dto: ProdutoCriarDto): Promise<ProdutoRetornoDto> {
         try {
-            this.logger.trace("Start dto={}", dto)
-            const produtoSavedEntity = await this.produtoRepository.save(new ProdutoModel(dto));
-            const idProdutoCreated = produtoSavedEntity.id;
-            this.logger.trace("End idProdutoCreated={}", idProdutoCreated);
-            return idProdutoCreated as number;
+            const retornoDto = await this.produtoRepository.save(new ProdutoModel(dto));
+
+            return retornoDto.getProdutoDto();
 
         } catch (e) {
             this.logger.error(e);
@@ -85,12 +83,10 @@ export class ProdutoMySqlRepositoryGateway implements IProdutoRepositoryGateway 
         }
 
     }
-    async alterar(produto: ProdutoDto): Promise<void> {
+    async alterar(produto: ProdutoAlterarDto): Promise<ProdutoRetornoDto> {
         try {
-            this.logger.trace("Start produto={}", produto)
-            await this.produtoRepository.save(new ProdutoModel(produto));
-            this.logger.trace("End");
-
+            const retornoDto = await this.produtoRepository.save(new ProdutoModel(produto));
+            return retornoDto.getProdutoDto();
         } catch (e) {
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();

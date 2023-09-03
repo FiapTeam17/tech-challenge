@@ -1,6 +1,6 @@
 export enum ProdutoCategoriaEnum {
-    LANCHE,
-    ACOMPANHAMENTO,
-    BEBIDA,
-    SOBREMESA,
+    LANCHE = "LANCHE",
+    ACOMPANHAMENTO = "ACOMPANHAMENTO",
+    BEBIDA = "BEBIDA",
+    SOBREMESA = "SOBREMESA"
 }

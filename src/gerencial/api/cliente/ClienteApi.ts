@@ -1,10 +1,10 @@
 import { Controller } from "@tsed/di";
 import { BodyParams, Inject, Logger, PathParams } from "@tsed/common";
 import { Get, Post, Put, Returns } from "@tsed/schema";
-import { ClienteJson } from "@gerencial/api";
 import { MysqlDataSource } from "@database";
 import { ClienteController } from "@gerencial/controllers";
-import { AlterarClienteParamsDto, CriarClienteParamsDto } from "@gerencial/dtos";
+import { ClienteAlterarDto, ClienteCriarDto, ClienteRetornoDto } from "@gerencial/dtos";
+
 
 @Controller("/clientes")
 export class ClienteApi {
@@ -15,52 +15,45 @@ export class ClienteApi {
   ) {
     this.clienteController = new ClienteController(MysqlDataSource, logger);
   }
+
   @Get("/cpf/:cpf")
-  @Returns(200, ClienteJson)
+  @Returns(200, ClienteRetornoDto)
   @Returns(404).Description("Not found")
   async obterPorCpf(@PathParams("cpf") cpf: string) {
-    this.logger.trace("Start cpf={}", cpf);
-    const cliente = await this.clienteController.obterPorCpf(cpf);
-    const clientJson = new ClienteJson(cliente);
-    this.logger.trace("End clientJson={}", clientJson);
-    return clientJson;
+    const clienteDto = await this.clienteController.obterPorCpf(cpf);
+    return clienteDto;
   }
 
   @Get("/email/:email")
-  @Returns(200, ClienteJson)
+  @Returns(200, ClienteRetornoDto)
   @Returns(404).Description("Not found")
   async obterPorEmail(@PathParams("email") email: string) {
-    const cliente = await this.clienteController.obterPorEmail(email);
-
-    return new ClienteJson(cliente);
+    const clienteDto = await this.clienteController.obterPorEmail(email);
+    return clienteDto;
   }
 
   @Get("/:id")
-  @Returns(200, ClienteJson)
+  @Returns(200, ClienteRetornoDto)
   @Returns(404).Description("Not found")
   async obterPorId(@PathParams("id") id: number) {
-    const cliente = await this.clienteController.obterPorId(id);
-    return new ClienteJson(cliente);
+    const clienteDto = await this.clienteController.obterPorId(id);
+    return clienteDto;
   }
 
   @Post("/")
-  @Returns(201, ClienteJson)
+  @Returns(201, ClienteRetornoDto)
   @Returns(404).Description("Not found")
-  async criarCliente(@BodyParams() cliente: ClienteJson) {
-    this.logger.trace("Start cliente={}", cliente);
-    const returnDto = await this.clienteController.criar(new CriarClienteParamsDto(cliente.getDto()));
-    this.logger.trace("End clienteId={}", returnDto.clienteId);
-    cliente.id = returnDto.clienteId;
-    return cliente;
+  async criarCliente(@BodyParams() clienteDto: ClienteCriarDto) {
+    const returnDto = await this.clienteController.criar(clienteDto);
+    return returnDto;
   }
 
   @Put("/:id")
   @Returns(200)
   @Returns(404).Description("Not found")
-  async alterarCliente(@BodyParams() clienteJson: ClienteJson, @PathParams("id") id: number){
-    this.logger.trace("Start cliente={}, id={}", clienteJson, id);
-    await this.clienteController.alterar(new AlterarClienteParamsDto(clienteJson.getDto(id)));
-    this.logger.trace("End");
+  async alterarCliente(@BodyParams() clienteDto: ClienteAlterarDto, @PathParams("id") id: number){
+    clienteDto.id = id;
+    const returnDto = await this.clienteController.alterar(clienteDto);
+    return returnDto;
   }
-
 }

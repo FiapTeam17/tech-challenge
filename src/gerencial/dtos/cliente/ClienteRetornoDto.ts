@@ -1,8 +1,7 @@
 import { Description, Example, Property, Required } from "@tsed/schema";
-import { ClienteDto } from "@gerencial/dtos";
 
+export class ClienteRetornoDto{
 
-export class ClienteJson {
     @Description("Identificador")
     @Example("123456")
     @Property()
@@ -23,15 +22,12 @@ export class ClienteJson {
     @Example("cliente@teste.com.br")
     @Property()
     public readonly email?: string;
-    
-    public constructor(cliente: ClienteDto){
-        this.id = cliente.id;
-        this.nome = cliente.nome;
-        this.cpf = cliente.cpf;
-        this.email = cliente.email;
+
+    constructor(nome?: string, cpf?: string, email?: string, id?: number) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
     }
 
-    public getDto(id?: number): ClienteDto{
-        return new ClienteDto(id, this.nome, this.cpf, this.email);
-    }    
 }

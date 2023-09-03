@@ -162,7 +162,7 @@ export class PedidoEntity {
             this.dataCadastro as never,
             itens,
             this.observacao,
-            this.cliente?.toClienteDto(),
+            this.cliente,
             this.dataConclusao,
             this.id
         );
@@ -177,7 +177,7 @@ export class PedidoEntity {
             this.dataCadastro as never,
             itens,
             this.observacao,
-            this.cliente?.toClienteDto(),
+            this.cliente,
             this.dataConclusao,
             this.id,
             qrDataMercadoPago

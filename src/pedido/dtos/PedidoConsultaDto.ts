@@ -66,7 +66,7 @@ export class PedidoConsultaDto {
         return {
             id: pedido.id,
             observacao: pedido.observacao,
-            clienteId: pedido.cliente?.id,
+            cliente: pedido.cliente,
             status: pedido.status,
             itens: pedido.itens?.map(i => PedidoConsultaDto.getItemInstance(i)),
             qrCodeMercadoPago: pedido.qrDataMercadoPago

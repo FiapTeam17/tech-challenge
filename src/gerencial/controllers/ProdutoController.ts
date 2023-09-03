@@ -14,13 +14,7 @@ import {
   ObterProdutoUseCase
 } from "@gerencial/usecases";
 import { ProdutoMySqlRepositoryGateway } from "@gerencial/gateways";
-import {
-  AlterarProdutoParamsDto,
-  AlterarProdutoReturnDto,
-  CriarProdutoParamsDto,
-  CriarProdutoReturnDto,
-  ProdutoDto
-} from "@gerencial/dtos";
+import { ProdutoAlterarDto, ProdutoCriarDto, ProdutoRetornoDto } from "@gerencial/dtos";
 
 
 export class ProdutoController {
@@ -34,26 +28,26 @@ export class ProdutoController {
     private dataSource: DataSource,
     private logger: Logger
   ) {
-    this.produtoRepositoryGateway = new ProdutoMySqlRepositoryGateway(dataSource, logger);
-    this.obterProdutoUseCase = new ObterProdutoUseCase(this.produtoRepositoryGateway, logger);
-    this.criarProdutoUseCase = new CriarProdutoUseCase(this.produtoRepositoryGateway, logger);
-    this.alterarProdutoUseCase = new AlterarProdutoUseCase(this.produtoRepositoryGateway, logger);
-    this.excluirProdutoUseCase = new ExcluirProdutoUseCase(this.produtoRepositoryGateway, logger);
+    this.produtoRepositoryGateway = new ProdutoMySqlRepositoryGateway(this.dataSource, this.logger);
+    this.obterProdutoUseCase = new ObterProdutoUseCase(this.produtoRepositoryGateway, this.logger);
+    this.criarProdutoUseCase = new CriarProdutoUseCase(this.produtoRepositoryGateway, this.logger);
+    this.alterarProdutoUseCase = new AlterarProdutoUseCase(this.produtoRepositoryGateway, this.logger);
+    this.excluirProdutoUseCase = new ExcluirProdutoUseCase(this.produtoRepositoryGateway, this.logger);
   }
 
-  async obterPorId(id: number): Promise<ProdutoDto>{
+  async obterPorId(id: number): Promise<ProdutoRetornoDto>{
     return await this.obterProdutoUseCase.obterPorId(id);
   }
 
-  async obterPorCategoria(categoria: string): Promise<ProdutoDto[]> {
+  async obterPorCategoria(categoria: string): Promise<ProdutoRetornoDto[]> {
     return await this.obterProdutoUseCase.obterPorCategoria(categoria);
   }
 
-  async criar(dto: CriarProdutoParamsDto): Promise<CriarProdutoReturnDto>{
+  async criar(dto: ProdutoCriarDto): Promise<ProdutoRetornoDto>{
     return await this.criarProdutoUseCase.criar(dto);
   }
 
-  async alterar(dto: AlterarProdutoParamsDto): Promise<AlterarProdutoReturnDto>{
+  async alterar(dto: ProdutoAlterarDto): Promise<ProdutoRetornoDto>{
     return await this.alterarProdutoUseCase.alterar(dto);
   }
 

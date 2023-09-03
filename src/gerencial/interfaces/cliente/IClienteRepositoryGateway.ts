@@ -1,17 +1,12 @@
-import {
-    AlterarClienteParamsDto,
-    AlterarClienteReturnDto,
-    ClienteDto, CriarClienteParamsDto,
-    CriarClienteReturnDto
-} from "@gerencial/dtos/cliente";
+import { ClienteAlterarDto, ClienteRetornoDto, ClienteDto } from "@gerencial/dtos/cliente";
 import { Optional } from "typescript-optional";
 
 export const IClienteRepositoryGateway: unique symbol = Symbol("IClienteRepositoryGateway");
 
 export interface IClienteRepositoryGateway {
-    obterPorId(id: number): Promise<Optional<ClienteDto>>;
-    obterPorCpf(cpf: string): Promise<Optional<ClienteDto>>;
-    obterPorEmail(email: string): Promise<Optional<ClienteDto>>;
-    criar(dto: CriarClienteParamsDto): Promise<CriarClienteReturnDto>;
-    alterar(dto: AlterarClienteParamsDto): Promise<AlterarClienteReturnDto>;
+    obterPorId(id: number): Promise<Optional<ClienteRetornoDto>>;
+    obterPorCpf(cpf: string): Promise<Optional<ClienteRetornoDto>>;
+    obterPorEmail(email: string): Promise<Optional<ClienteRetornoDto>>;
+    criar(dto: ClienteDto): Promise<ClienteRetornoDto>;
+    alterar(dto: ClienteAlterarDto): Promise<ClienteRetornoDto>;
 }

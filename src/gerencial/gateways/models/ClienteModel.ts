@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ClienteDto } from "@gerencial/dtos";
+import { ClienteRetornoDto, ClienteDto } from "@gerencial/dtos";
 import { PedidoModel } from "@pedido/gateways";
 
 @Entity("Cliente")
@@ -44,7 +44,7 @@ export class ClienteModel {
         }
     }
 
-    public getClientDto(): ClienteDto {
-        return new ClienteDto(this.id, this.nome, this.cpf, this.email);
+    public getClientDto(): ClienteRetornoDto {
+        return new ClienteRetornoDto(this.nome, this.cpf, this.email, this.id);
     }
 }

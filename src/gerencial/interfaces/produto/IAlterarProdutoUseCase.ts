@@ -1,7 +1,7 @@
-import { AlterarProdutoParamsDto, AlterarProdutoReturnDto } from "@gerencial/dtos";
+import { ProdutoAlterarDto, ProdutoRetornoDto } from "@gerencial/dtos";
 
 export const IAlterarProdutoUseCase: unique symbol = Symbol("IAlterarProdutoUseCase");
 
 export interface IAlterarProdutoUseCase {
-    alterar(dto: AlterarProdutoParamsDto): Promise<AlterarProdutoReturnDto>;
+    alterar(dto: ProdutoAlterarDto): Promise<ProdutoRetornoDto>;
 }

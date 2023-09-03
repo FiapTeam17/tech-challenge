@@ -2,12 +2,7 @@ import { Logger } from "@tsed/common";
 import { DataSource, In, Repository } from "typeorm";
 import { Optional } from "typescript-optional";
 import { ErrorToAccessDatabaseException } from "@common";
-import {
-    AlterarClienteParamsDto,
-    AlterarClienteReturnDto, ClienteDto,
-    CriarClienteParamsDto,
-    CriarClienteReturnDto
-} from "@gerencial/dtos";
+import { ClienteAlterarDto, ClienteRetornoDto, ClienteDto } from "@gerencial/dtos";
 import { IClienteRepositoryGateway } from "@gerencial/interfaces";
 import { ClienteModel } from "@gerencial/gateways/models";
 
@@ -22,13 +17,10 @@ export class ClienteMySqlRepositoryGateway implements IClienteRepositoryGateway 
         this.clienteRepository = this.dataSource.getRepository(ClienteModel);
     }
 
-    async alterar(dto: AlterarClienteParamsDto): Promise<AlterarClienteReturnDto> {
+    async alterar(dto: ClienteAlterarDto): Promise<ClienteRetornoDto> {
         try {
-            this.logger.trace("Start dto={}", dto);
-            await this.clienteRepository.save(new ClienteModel(dto.cliente));
-            const returnDto = new AlterarClienteReturnDto();
-            this.logger.trace("End returnDto={}", returnDto);
-            return returnDto;
+            const clienteModel = await this.clienteRepository.save(new ClienteModel(dto));
+            return clienteModel.getClientDto();
 
         } catch (e) {
             this.logger.error(e);
@@ -36,13 +28,10 @@ export class ClienteMySqlRepositoryGateway implements IClienteRepositoryGateway 
         }
     }
 
-    async criar(dto: CriarClienteParamsDto): Promise<CriarClienteReturnDto> {
+    async criar(dto: ClienteDto): Promise<ClienteRetornoDto> {
         try {
-            this.logger.trace("Start dto={}", dto);
-            const clienteEntity = await this.clienteRepository.save(new ClienteModel(dto.cliente));
-            const returnDto = new CriarClienteReturnDto(clienteEntity.id as number);
-            this.logger.trace("End returnDto={}", returnDto);
-            return returnDto;
+            const clienteModel = await this.clienteRepository.save(new ClienteModel(dto));
+            return clienteModel.getClientDto();
         } catch (e) {
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();

@@ -1,7 +1,6 @@
 import { IAlterarClienteUseCase, IClienteRepositoryGateway } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
-import { AlterarClienteParamsDto, AlterarClienteReturnDto, ClienteDto } from "@gerencial/dtos";
-import { ClienteNaoEncontradoException } from "@gerencial/usecases";
+import { ClienteAlterarDto, ClienteRetornoDto } from "@gerencial/dtos";
 import { ClienteEntity } from "@gerencial/entities";
 
 export class AlterarClienteUseCase implements IAlterarClienteUseCase{
@@ -11,19 +10,12 @@ export class AlterarClienteUseCase implements IAlterarClienteUseCase{
         private logger: Logger
      ){}
     
-    async alterar(paramsDto: AlterarClienteParamsDto): Promise<AlterarClienteReturnDto> {
+    async alterar(paramsDto: ClienteAlterarDto): Promise<ClienteRetornoDto> {
         this.logger.trace("Start requestDto={}", paramsDto);
 
-        const cliente = this.mapDtoToDomain(paramsDto.cliente);
+        const cliente = this.mapDtoToDomain(paramsDto);
 
         cliente.validar();
-
-        const clienteOp = await this.clienteRepositoryGateway.obterPorCpf(<string>cliente.cpf);
-        
-        if (clienteOp.isEmpty()) {
-            this.logger.warn("Cliente não encontardo!");
-            throw new ClienteNaoEncontradoException();
-        }
         
         const returnDto = await this.clienteRepositoryGateway.alterar(paramsDto);
         
@@ -31,7 +23,7 @@ export class AlterarClienteUseCase implements IAlterarClienteUseCase{
         return returnDto;
     }
 
-    private mapDtoToDomain(dto: ClienteDto): ClienteEntity {
+    private mapDtoToDomain(dto: ClienteAlterarDto): ClienteEntity {
         return new ClienteEntity(dto.id, dto.nome, dto.cpf, dto.email);
     }
 }

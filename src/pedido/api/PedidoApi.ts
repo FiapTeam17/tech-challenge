@@ -24,7 +24,7 @@ export class PedidoApi {
     }
 
     @Get("/andamento")
-    @Returns(200, PedidoEmAndamentoDto).Description("Pedidos em andamento")
+    @Returns(200, Array).Of(PedidoEmAndamentoDto).Description("Pedidos em andamento")
     async obterEmAndamento(): Promise<PedidoEmAndamentoDto[]> {
         this.logger.info("Start em andamento");
         const pedidos = await this.pedidoController.obterEmAndamento();
@@ -62,7 +62,7 @@ export class PedidoApi {
     }
 
     @Get()
-    @Returns(200, PedidoConsultaDto)
+    @Returns(200, Array).Of(PedidoConsultaDto)
     async obterPedidosPorStatus(
         @QueryParams("status") status: string,
         @QueryParams("identificadorPagamento") identificadorPagamento: string): Promise<PedidoConsultaDto[]> {
@@ -83,7 +83,7 @@ export class PedidoApi {
         return pedido;
     }
 
-    @Get("/consultarPagamentos/:idPedido")
+    @Get("/:idPedido/statusPagamento")
     @Returns(200, PedidoPagamentoDto)
     async consultarPagamentos(@PathParams("idPedido") idPedido: number): Promise<PedidoPagamentoDto> {
         this.logger.trace("Start identificadorPagamento={}", idPedido);

@@ -7,7 +7,7 @@ export class PedidoPagamentoDto {
     public readonly IdPedido: number;
 
     @Description("Aprovação do Pagamento do Pedido")
-    @Example("Sim")
+    @Example("True")
     @Property()
     public foiAprovado: boolean;
 

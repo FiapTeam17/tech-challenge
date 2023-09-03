@@ -1,7 +1,7 @@
 import { ICriarProdutoUseCase, IProdutoRepositoryGateway } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
-import { CriarProdutoParamsDto, CriarProdutoReturnDto, ProdutoDto } from "@gerencial/dtos";
-import { ProdutoValidacaoException } from "@gerencial/usecases";
+import { ProdutoCriarDto, ProdutoRetornoDto } from "@gerencial/dtos";
+import { ProdutoEntity } from "@gerencial/entities";
 
 export class CriarProdutoUseCase implements ICriarProdutoUseCase{
     constructor( 
@@ -9,28 +9,17 @@ export class CriarProdutoUseCase implements ICriarProdutoUseCase{
         private logger: Logger,
      ){}
 
-    public async criar(dto: CriarProdutoParamsDto): Promise<CriarProdutoReturnDto> {
-        this.logger.trace("Start dto={}", dto);
+    public async criar(dto: ProdutoCriarDto): Promise<ProdutoRetornoDto> {
+        
+        const produto = this.mapDtoToDomain(dto);
 
-        this.validar(dto.produto);
-
-        const id = await this.produtoRepositoryGateway.criar(dto.produto);
-        const returnDto = new CriarProdutoReturnDto(id);
-        this.logger.trace("End returnDto={}", returnDto);
+        produto.validar();
+        const returnDto = await this.produtoRepositoryGateway.criar(dto);
         return returnDto;
     }
 
-    private validar(produtoDto: ProdutoDto){
-        if(!produtoDto.nome){
-            this.logger.warn("Nome é obrigatório");
-            throw new ProdutoValidacaoException("Nome é obrigatório");
-        }else if(!produtoDto.valor){
-            this.logger.warn("Valor é obrigatório");
-            throw new ProdutoValidacaoException("Valor é obrigatório");
-        }
-        else if(!produtoDto.categoriaId === undefined){
-            this.logger.warn("Categoria é obrigatória");
-            throw new ProdutoValidacaoException("Categoria é obrigatória");
-        }
+    private mapDtoToDomain(dto: ProdutoCriarDto): ProdutoEntity {
+        return new ProdutoEntity(undefined, dto.nome, dto.descricao, dto.valor, dto.categoria, dto.imagem);
     }
+    
 }

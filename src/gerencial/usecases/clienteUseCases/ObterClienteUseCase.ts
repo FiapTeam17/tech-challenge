@@ -1,7 +1,7 @@
 import { IClienteRepositoryGateway, IObterClienteUseCase } from "@gerencial/interfaces";
 import { Logger } from "@tsed/common";
 import { Optional } from "typescript-optional";
-import { ClienteDto } from "@gerencial/dtos";
+import { ClienteRetornoDto, ClienteDto } from "@gerencial/dtos";
 import { ClienteNaoEncontradoException } from "@gerencial/usecases";
 
 export class ObterClienteUseCase implements  IObterClienteUseCase{
@@ -10,31 +10,25 @@ export class ObterClienteUseCase implements  IObterClienteUseCase{
        private logger: Logger
     ){}
 
-    async obterPorId(id: number): Promise<ClienteDto> {
-        this.logger.trace("Start id={}", id);
+    async obterPorId(id: number): Promise<ClienteRetornoDto> {
         const clienteOp = await this.clienteRepositoryGateway.obterPorId(id);
         const clienteDto = this.getClienteDto(clienteOp);
-        this.logger.trace("End clienteDto={}", clienteDto);
         return clienteDto;
     }
 
-    async obterPorCpf(cpf: string): Promise<ClienteDto> {
-        this.logger.trace("Start cpf={}", cpf);
+    async obterPorCpf(cpf: string): Promise<ClienteRetornoDto> {
         const clienteOp = await this.clienteRepositoryGateway.obterPorCpf(cpf);
         const clienteDto = this.getClienteDto(clienteOp);
-        this.logger.trace("End clienteDto={}", clienteDto);
         return clienteDto;
     }
 
-    async obterPorEmail(email: string): Promise<ClienteDto> {
-        this.logger.trace("Start email={}", email);
+    async obterPorEmail(email: string): Promise<ClienteRetornoDto> {
         const clienteOp = await this.clienteRepositoryGateway.obterPorEmail(email);
         const clienteDto = this.getClienteDto(clienteOp);
-        this.logger.trace("End clienteDto={}", clienteDto);
         return clienteDto;
     }
 
-    private getClienteDto(clienteOp: Optional<ClienteDto>): ClienteDto {
+    private getClienteDto(clienteOp: Optional<ClienteDto>): ClienteRetornoDto {
         if (clienteOp.isEmpty()) {
             this.logger.warn("Cliente não encontrado");
             throw new ClienteNaoEncontradoException();
