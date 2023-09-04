@@ -28,7 +28,14 @@
     ],
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "paths": {
+      "@common": ["./src/common/index.ts"],
+      "@database": ["./src/config/database/index.ts"],
+      "@gerencial/*": ["./src/gerencial/*"],
+      "@pedido/*": ["./src/pedido/*"],
+      "@pagamento/*": ["./src/pagamento/*"]
+    }
   },
   "include": [
     "src"

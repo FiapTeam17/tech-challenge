@@ -1,4 +1,4 @@
-import { SystemBaseException } from "..";
+import { SystemBaseException } from "./SystemBaseException";
 
 export class ErrorToAccessDatabaseException extends SystemBaseException {
     public readonly code = "sgr.errorToAccessException";
