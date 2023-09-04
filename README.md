@@ -1,4 +1,4 @@
-## Como iniciar
+ ## Como iniciar
 
 > Projeto desenvolvido em NodeJs utilizando o framework Ts.ED e banco de dados Mysql
 
@@ -31,16 +31,35 @@ minikube addons enable ingress
 
 # comando para carregar a imagem local para o minikube
 minikube image load sgr-api
+```
 
-# executar os arquivos yaml na seguinte ordem:
+### Execute o configMap:
+```
   kubectl apply -f deployment/k8s/sgr-configmap.yaml
+```
+### Execute os pods do banco de dados:
+```
   kubectl apply -f deployment/k8s/mysql-config-depl.yaml
+```
+> [!WARNING]  
+> Antes de executar os pods da API, verifique se a instância do banco está pronta:
+```
+  # comando para consultar os pods:
+    kubectl get pod
+  # copie o nome do pod e execute o comando:
+    kubectl logs <pod>
+```
+### Execute os pods da api:
+```
   kubectl apply -f deployment/k8s/sgr-service-depl.yaml
+```
+### Execute o controller ingress:
+```
   kubectl apply -f deployment/k8s/sgr-ingress
+```
 
 # Obs: é necessário ter o minikube instalado
 
-```
 
 ### Caso a execução esteja sendo feita em Windows, utilizando WSL e Docker Desktop, executar o seguinte comando para tunelar o controller do cluster:
 
@@ -61,5 +80,5 @@ Adicione o IP atribuído no arquivo de hosts localizado em /etc/hosts, que dever
 ## Após a subida dos containers siga os passos a seguir :
 
 > Para acessar o swagger da aplicação: <a href="http://localhost:8083/doc">Clique aqui</a>  
-> Para acessar o swagger da aplicação em kubernetes (Linux): <a href="www.sgr-api.com/doc">Clique aqui</a>  
+> Para acessar o swagger da aplicação em kubernetes (Linux): <a href="sgr-api.com/doc">Clique aqui</a>  
 > Para acessar o swagger da aplicação em kubernetes (WSL): <a href="http://127.0.0.1/doc/">Clique aqui</a>
