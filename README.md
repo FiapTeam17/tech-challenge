@@ -20,6 +20,8 @@ docker-compose up -d
 ## Para executar o projeto em Kubernetes (utilizando o minikube):
 
 ```
+# Obs: é necessário ter o minikube instalado
+
 # comando para buildar a imagem:
 docker build -t sgr-api .
 
@@ -48,6 +50,8 @@ minikube image load sgr-api
     kubectl get pod
   # copie o nome do pod e execute o comando:
     kubectl logs <pod>
+  # comando para verificar o status do pod:
+    kubectl get pod --watch
 ```
 ### Execute os pods da api:
 ```
@@ -57,10 +61,11 @@ minikube image load sgr-api
 ```
   kubectl apply -f deployment/k8s/sgr-ingress
 ```
-
-# Obs: é necessário ter o minikube instalado
-
-
+> [!IMPORTANT]  
+> Aguarde o IP ser atribuído ao ingress antes de executar os próximos passos
+```
+  kubectl get ingress --watch
+```
 ### Caso a execução esteja sendo feita em Windows, utilizando WSL e Docker Desktop, executar o seguinte comando para tunelar o controller do cluster:
 
 ```
@@ -72,6 +77,7 @@ minikube image load sgr-api
 ```
 # kubectl get ingress
 ```
+
 Adicione o IP atribuído no arquivo de hosts localizado em /etc/hosts, que deverá ficar:  
 ```
 <IP atribuido>  sgr-api.com
@@ -82,7 +88,6 @@ Adicione o IP atribuído no arquivo de hosts localizado em /etc/hosts, que dever
 > Para acessar o swagger da aplicação: <a href="http://localhost:8083/doc">Clique aqui</a>  
 > Para acessar o swagger da aplicação em kubernetes (Linux): <a href="sgr-api.com/doc">Clique aqui</a>  
 > Para acessar o swagger da aplicação em kubernetes (WSL): <a href="http://127.0.0.1/doc/">Clique aqui</a>
-> Para acessar o swagger da aplicação: <a href="http://localhost:8083/doc">Clique aqui</a>
 
 ## Para criar um pedido deve-se usar a API
 
