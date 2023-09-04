@@ -23,7 +23,7 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
 
     async confirmar(codigoPagamento: string, statusPagamento: string): Promise<void> {
         this.logger.trace("Start identificadorPagamento={}, statusPagamento={}", codigoPagamento, statusPagamento);
-        const pagamento = await this.pagamentoRepositoryGateway.obterPorIdentificador(codigoPagamento);
+        const pagamento = await this.pagamentoRepositoryGateway.obterPorCodigoPagamento(codigoPagamento);
         if (pagamento.isEmpty()) {
             this.logger.warn("Pagamento não encontrado. identificadorPagamento={}", codigoPagamento);
             throw new PedidoNotFoundException();
@@ -55,9 +55,11 @@ export class ConfirmarPagamentoUseCase implements IConfirmarPagamentoUseCase {
         const pagamentoDto = pagamentoDtoOp.get();
         const pagamentoDtoUltimoRegistro = pagamentoDto[pagamentoDto.length - 1];
         pagamentoDtoUltimoRegistro.codigoPagamento = crypto.randomBytes(8).join('');
+
         await this.pagamentoRepositoryGateway.atualizarCodigoPagamento(pagamentoDtoUltimoRegistro);
         const pagamentoMercadoPagoDto = new PagamentoMercadoPagoDto();
         pagamentoMercadoPagoDto.id = pagamentoDtoUltimoRegistro.codigoPagamento as string;
+
         const pagamentoMp = await this.pagamentoMpServiceHttpGateway.obterPagamento(pagamentoMercadoPagoDto.id.toString());
         const pagamentoMpDto = pagamentoMp.get();
         await this.confirmar(pagamentoMpDto.id, pagamentoMpDto.status);

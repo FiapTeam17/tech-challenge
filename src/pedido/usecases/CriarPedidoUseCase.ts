@@ -1,14 +1,15 @@
 import { Logger } from "@tsed/common";
 import { ICriarPedidoUseCase, IPedidoRepositoryGateway } from "@pedido/interfaces";
 import { ProdutoNotFoundException } from "@gerencial/usecases";
-import { PedidoCadastroDto, PedidoConsultaDto } from "@pedido/dtos";
+import { PedidoCriarDto } from "@pedido/dtos";
 import { PedidoEntity, PedidoItemEntity, StatusPedido } from "@pedido/entities";
 import { ClienteEntity, ProdutoEntity } from "@gerencial/entities";
 import { IObterClienteUseCase, IObterProdutoUseCase } from "@gerencial/interfaces";
 import { IGerarQrCodeMpUseCase } from "@pagamento/interfaces/IGerarQrCodeMpUseCase";
-import { PagamentoDto, QrCodeRequestDto } from "@pagamento/dtos";
+import { PagamentoDto } from "@pagamento/dtos";
 import { ICriarPagamentoUseCase } from "@pagamento/interfaces/ICriarPagamentoUseCase";
-import { StatusPagamento } from "@pagamento/types";
+import { PedidoCriarRetornoDto } from "@pedido/dtos/PedidoCriarRetornoDto";
+import { IDefinirQrCodePagamentoUseCase } from "@pagamento/interfaces";
 
 export class CriarPedidoUseCase implements ICriarPedidoUseCase {
 
@@ -18,10 +19,11 @@ export class CriarPedidoUseCase implements ICriarPedidoUseCase {
         private obterClienteUseCase: IObterClienteUseCase,
         private gerarQrCodeMpUseCase: IGerarQrCodeMpUseCase,
         private criarPagamentoUseCase: ICriarPagamentoUseCase,
-        private logger: Logger) { }
+        private definirQrCodePagamentoUseCase: IDefinirQrCodePagamentoUseCase,
+        private logger: Logger
+    ) { }
 
-    async criar(pedidoDto: PedidoCadastroDto): Promise<PedidoConsultaDto> {
-        this.logger.trace("Start pedido={}", pedidoDto);
+    async criar(pedidoDto: PedidoCriarDto): Promise<PedidoCriarRetornoDto> {
 
         //TODO adicionar mapper
         const pedido = this.dtoToDomain(pedidoDto);
@@ -37,12 +39,24 @@ export class CriarPedidoUseCase implements ICriarPedidoUseCase {
             pedido.id = id;
         }
 
-        const qrCodeResponseDto = await this.gerarQrCodeMpUseCase.gerarQrCode(new QrCodeRequestDto());
+        let pag = new PagamentoDto(undefined, pedido.id);
 
-        await this.criarPagamentoUseCase.criar(
-            new PagamentoDto(undefined, pedido.id, undefined, StatusPagamento.PENDENTE, qrCodeResponseDto.qr_data));
-        this.logger.trace("End id={}", id);
-        return PedidoConsultaDto.getInstance(pedido.toPedidoQrDataDto(qrCodeResponseDto.qr_data));
+        pag = await this.criarPagamentoUseCase.criar(pag);
+
+        const qrCodeResponseDto = await this.gerarQrCodeMpUseCase.gerarQrCode(pag.id as number, pedido.valorTotal);
+        pag.qrCode = qrCodeResponseDto.qr_data;
+
+        await this.definirQrCodePagamentoUseCase.atualizar(pag.id as number, pag.qrCode);
+
+        const respPedidoDto = pedido.toPedidoDto();
+
+        const resp : PedidoCriarRetornoDto = {...respPedidoDto, qrCodeMercadoPago: qrCodeResponseDto.qr_data, itens: []};
+
+        for (let i = 0; i < respPedidoDto.itens!.length; i++) {
+            resp.itens.push({...respPedidoDto.itens![i]});
+        }
+
+        return resp;
     }
 
     private async verificaRemoveClienteInexistente(pedido: PedidoEntity) {
@@ -80,7 +94,7 @@ export class CriarPedidoUseCase implements ICriarPedidoUseCase {
 
     }
 
-    private dtoToDomain(pedidoDto: PedidoCadastroDto): PedidoEntity {
+    private dtoToDomain(pedidoDto: PedidoCriarDto): PedidoEntity {
         let cliente = undefined;
         if (pedidoDto.clienteId) {
             cliente = new ClienteEntity(pedidoDto.clienteId);

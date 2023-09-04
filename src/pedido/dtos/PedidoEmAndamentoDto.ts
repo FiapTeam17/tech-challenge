@@ -1,7 +1,7 @@
 import { Description, Enum, Example, Property } from "@tsed/schema";
 import { OnSerialize } from "@tsed/json-mapper";
 import { PedidoEntity, StatusPedido } from "@pedido/entities";
-import { StatusPedidoEnumMapper } from "@pedido/types";
+import { STATUS_PEDIDO, StatusPedidoEnumMapper } from "@pedido/types";
 
 export class PedidoEmAndamentoDto {
     @Description("Identificador")
@@ -21,7 +21,7 @@ export class PedidoEmAndamentoDto {
 
     @Description("Categoria")
     @Example("RECEBIDO")
-    @Enum("AGUARDANDO_CONFIRMACAO_PAGAMENTO", "RECEBIDO", "EM_PREPARACAO", "PRONTO", "FINALIZADO")
+    @Enum(STATUS_PEDIDO)
     @OnSerialize((c: StatusPedido) => StatusPedidoEnumMapper.enumParaString(c))
     public readonly status?: StatusPedido;
 

@@ -1,7 +1,8 @@
-import { IPagamentoRepositoryGateway } from "@pagamento/interfaces";
+import { ICriarPagamentoUseCase, IPagamentoRepositoryGateway } from "@pagamento/interfaces";
 import { PagamentoDto } from "@pagamento/dtos";
 import { Logger } from "@tsed/logger";
-import { ICriarPagamentoUseCase } from "@pagamento/interfaces/ICriarPagamentoUseCase";
+import { StatusPagamento } from "@pagamento/types";
+
 
 export class CriarPagamentoUseCase implements ICriarPagamentoUseCase {
     constructor(
@@ -9,8 +10,8 @@ export class CriarPagamentoUseCase implements ICriarPagamentoUseCase {
         private logger: Logger) {
     }
 
-    async criar(pagamentoDto: PagamentoDto): Promise<number | undefined> {
-        this.logger.trace("Start id={}", pagamentoDto.pedidoId);
-        return await this.pagamentoRepositoryGateway.criar(pagamentoDto);
+    async criar(pagamentoDto: PagamentoDto): Promise<PagamentoDto> {
+        pagamentoDto.status = StatusPagamento.PENDENTE;
+        return await this.pagamentoRepositoryGateway.salvar(pagamentoDto);
     }
 }

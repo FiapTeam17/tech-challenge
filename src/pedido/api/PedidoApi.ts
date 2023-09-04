@@ -4,14 +4,15 @@ import { Controller } from "@tsed/di";
 import { MysqlDataSource } from "@database";
 import { PedidoController } from "@pedido/controllers";
 import {
-    PedidoCadastroDto,
-    PedidoConsultaDto,
+    PedidoCriarDto,
+    PedidoRetornoDto,
     PedidoEmAndamentoDto,
     PedidoPagamentoDto,
     PedidoStatusDto
 } from "@pedido/dtos";
 import { CamposObrigatoriosNaoPreechidoException } from "@pedido/usecases";
 import { StatusPedidoEnumMapper } from "@pedido/types";
+import { PedidoCriarRetornoDto } from "@pedido/dtos/PedidoCriarRetornoDto";
 
 @Controller("/pedidos")
 export class PedidoApi {
@@ -33,8 +34,8 @@ export class PedidoApi {
     }
 
     @Get("/:id")
-    @Returns(200, PedidoConsultaDto).Description("Pedido")
-    async obterPorId(@PathParams("id") id: number): Promise<PedidoConsultaDto> {
+    @Returns(200, PedidoRetornoDto).Description("Pedido")
+    async obterPorId(@PathParams("id") id: number): Promise<PedidoRetornoDto> {
         this.logger.info("Start pedidoId={}", id);
         const pedido = await this.pedidoController.obterPorId(id);
         this.logger.trace("End pedidoJson={}", pedido);
@@ -42,8 +43,8 @@ export class PedidoApi {
     }
 
     @Post("")
-    @Returns(201, PedidoConsultaDto).Description("Pedido criado")
-    async criar(@BodyParams() pedidoDto: PedidoCadastroDto): Promise<PedidoConsultaDto> {
+    @Returns(201, PedidoCriarRetornoDto).Description("Pedido criado")
+    async criar(@BodyParams() pedidoDto: PedidoCriarDto): Promise<PedidoCriarRetornoDto> {
         this.logger.info("Start pedidoJson={}", pedidoDto);
         const pedido = await this.pedidoController.criar(pedidoDto);
         this.logger.trace("End pedidoId={}", pedido?.id);
@@ -52,20 +53,20 @@ export class PedidoApi {
 
     @Patch("/:id/status")
     @Returns(200).Description("Nenhuma resposta")
-    async atualizarStatus(@PathParams("id") id: number, @BodyParams() pedidoJson: PedidoStatusDto): Promise<void> {
-        this.logger.info("Start id={}, pedidoJson={}", id, pedidoJson);
-        if (pedidoJson.status === undefined) {
+    async atualizarStatus(@PathParams("id") id: number, @BodyParams() pedidoDto: PedidoStatusDto): Promise<void> {
+        this.logger.info("Start id={}, pedidoJson={}", id, pedidoDto);
+        if (pedidoDto.status === undefined) {
             throw new CamposObrigatoriosNaoPreechidoException("Status deve ser informado");
         }
-        await this.pedidoController.atualizarStatus(id, StatusPedidoEnumMapper.stringParaEnum(pedidoJson.status as unknown as string));
+        await this.pedidoController.atualizarStatus(id, StatusPedidoEnumMapper.stringParaEnum(pedidoDto.status as unknown as string));
         this.logger.trace("End pedidoId={}", id);
     }
 
     @Get()
-    @Returns(200, Array).Of(PedidoConsultaDto)
+    @Returns(200, Array).Of(PedidoRetornoDto)
     async obterPedidosPorStatus(
         @QueryParams("status") status: string,
-        @QueryParams("identificadorPagamento") identificadorPagamento: string): Promise<PedidoConsultaDto[]> {
+        @QueryParams("identificadorPagamento") identificadorPagamento: string): Promise<PedidoRetornoDto[]> {
         this.logger.trace("Start status={}, identificadorPagamento={}", status, identificadorPagamento);
 
         const pedidos = await this.pedidoController.obterPorStatusAndIdentificadorPagamento(status, identificadorPagamento);
@@ -75,8 +76,8 @@ export class PedidoApi {
     }
 
     @Get("/pagamentos/:idPagamento")
-    @Returns(200, PedidoConsultaDto)
-    async obterPedidosPorIdentificadorPagamento(@PathParams("idPagamento") idPagamento: string): Promise<PedidoConsultaDto> {
+    @Returns(200, PedidoRetornoDto)
+    async obterPedidosPorIdentificadorPagamento(@PathParams("idPagamento") idPagamento: string): Promise<PedidoRetornoDto> {
         this.logger.trace("Start identificadorPagamento={}", idPagamento);
         const pedido = await this.pedidoController.obterPorIdentificadorPagamento(idPagamento);
         this.logger.trace("End pedidoJson={}", pedido);

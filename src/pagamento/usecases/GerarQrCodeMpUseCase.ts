@@ -12,8 +12,10 @@ export class GerarQrCodeMpUseCase implements IGerarQrCodeMpUseCase {
     ) {
 
     }
-    async gerarQrCode(qrCodeRequestDto: QrCodeRequestDto): Promise<QrCodeResponseDto> {
-        this.logger.trace("Start external_reference={}, total_amount={}", qrCodeRequestDto.external_reference, qrCodeRequestDto.total_amount);
-        return await this.pagamentoMpServiceHttpGateway.criarQrCode(qrCodeRequestDto);
+    async gerarQrCode(pagamentoId: number, valor: number): Promise<QrCodeResponseDto> {
+        const requestDto = new QrCodeRequestDto();
+        requestDto.external_reference = pagamentoId;
+        requestDto.total_amount = valor;
+        return await this.pagamentoMpServiceHttpGateway.criarQrCode(requestDto);
     }
 }

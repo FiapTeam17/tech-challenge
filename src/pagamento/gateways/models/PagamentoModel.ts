@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { PedidoModel } from "@pedido/gateways";
 import { PagamentoDto } from "@pagamento/dtos";
-import { StatusPagamentoEnumMapper } from "@pagamento/types/StatusPagamentoEnumMapper";
+import { StatusPagamentoEnumMapper } from "@pagamento/types";
 
 @Entity("Pagamento")
 export class PagamentoModel {
@@ -40,6 +40,6 @@ export class PagamentoModel {
     }
 
     public getDto(): PagamentoDto {
-        return new PagamentoDto(this.id, this.pedido?.id, this.codigoPagamento, StatusPagamentoEnumMapper.stringParaEnum(this.status), this.qrcode);
+        return new PagamentoDto(this.id, this.pedido?.id, StatusPagamentoEnumMapper.stringParaEnum(this.status), this.codigoPagamento, this.qrcode);
     }
 }

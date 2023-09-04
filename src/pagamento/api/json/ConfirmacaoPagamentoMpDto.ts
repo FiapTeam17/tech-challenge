@@ -1,4 +1,4 @@
-export class ConfirmacaoPagamentoMpJson {
+export class ConfirmacaoPagamentoMpDto {
     action: string
     api_version: string
     application_id: string

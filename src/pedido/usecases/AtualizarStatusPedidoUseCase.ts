@@ -11,7 +11,6 @@ export class AtualizarStatusPedidoUseCase implements IAtualizarStatusPedidoUseCa
         private logger: Logger) { }
 
     async atualizarStatus(pedidoId: number, status: StatusPedido): Promise<void> {
-        this.logger.trace("Start id={}", pedidoId);
         const pedidoOp: Optional<PedidoDto> = await this.pedidoRepositoryGateway.obterPorId(pedidoId);
         if (pedidoOp.isEmpty()) {
             this.logger.warn("Pedido id={} não encontrado", pedidoId);
@@ -21,6 +20,5 @@ export class AtualizarStatusPedidoUseCase implements IAtualizarStatusPedidoUseCa
         const pedido = PedidoEntity.getInstance(pedidoDto);
         pedido.setStatus(status);
         await this.pedidoRepositoryGateway.atualizarStatus(pedido.toPedidoDto());
-        this.logger.trace("End");
     }
 }

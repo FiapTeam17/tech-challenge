@@ -1,5 +1,5 @@
-export * from './PedidoCadastroDto';
-export * from './PedidoConsultaDto';
+export * from './PedidoCriarDto';
+export * from './PedidoRetornoDto';
 export * from './PedidoDto';
 export * from './PedidoEmAndamentoDto';
 export * from './PedidoPagamentoDto';

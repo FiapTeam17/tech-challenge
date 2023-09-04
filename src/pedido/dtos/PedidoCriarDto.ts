@@ -1,6 +1,6 @@
 import { CollectionOf, Description, Example, Property } from "@tsed/schema";
 
-export class PedidoItemCadastroDto {
+export class PedidoItemCriarDto {
 
     @Description("Qauntidade do Produto")
     @Example("5")
@@ -13,7 +13,7 @@ export class PedidoItemCadastroDto {
     public produtoId?: number
 }
 
-export class PedidoCadastroDto {
+export class PedidoCriarDto {
 
     @Description("Observação")
     @Example("Sem cebola")
@@ -26,6 +26,6 @@ export class PedidoCadastroDto {
     public readonly clienteId?: number;
 
     @Description("Itens do Pedido")
-    @CollectionOf(PedidoItemCadastroDto)
-    public readonly itens: PedidoItemCadastroDto[];
+    @CollectionOf(PedidoItemCriarDto)
+    public readonly itens: PedidoItemCriarDto[];
 }

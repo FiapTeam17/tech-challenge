@@ -1,2 +1,2 @@
-export * from './ConfirmacaoPagamentoJson';
-export * from './ConfirmacaoPagamentoMpJson';
+export * from './ConfirmacaoPagamentoDto';
+export * from './ConfirmacaoPagamentoMpDto';

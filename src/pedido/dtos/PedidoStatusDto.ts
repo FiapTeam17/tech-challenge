@@ -1,10 +1,11 @@
 import { Description, Enum, Example } from "@tsed/schema";
 import { StatusPedido } from "@pedido/entities";
+import { STATUS_PEDIDO } from "@pedido/types";
 
 export class PedidoStatusDto {
 
     @Description("Categoria")
     @Example("PAGO")
-    @Enum("AGUARDANDO_CONFIRMACAO_PAGAMENTO", "RECEBIDO", "EM_PREPARACAO", "PRONTO", "FINALIZADO")
+    @Enum(STATUS_PEDIDO)
     public readonly status?: StatusPedido;
 }

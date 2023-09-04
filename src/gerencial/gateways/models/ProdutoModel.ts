@@ -47,7 +47,10 @@ export class ProdutoModel {
             this.descricao = produto.descricao;
             this.valor = produto.valor;
             this.imagem = produto.imagem;
-            this.categoria = ProdutoCategoriaEnumMapper.enumParaString(produto.categoria);
+
+            if(produto.categoria) {
+                this.categoria = ProdutoCategoriaEnumMapper.enumParaString(produto.categoria);
+            }
         }
     }
 

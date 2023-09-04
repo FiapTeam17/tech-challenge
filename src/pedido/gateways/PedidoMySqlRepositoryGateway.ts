@@ -55,7 +55,7 @@ export class PedidoMySqlRepositoryGateway implements IPedidoRepositoryGateway {
       this.logger.trace("Start pedido={}", pedido);
       const pedidoId = pedido.id as number;
       await this.pedidoRepository.update(pedidoId, {
-        status: StatusPedidoEnumMapper.enumParaString(pedido.status)
+        status: StatusPedidoEnumMapper.enumParaNumber(pedido.status)
       });
       this.logger.trace("End");
     }

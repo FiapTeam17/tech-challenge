@@ -1,10 +1,10 @@
 import { CollectionOf, Description, Enum, Example, Property } from "@tsed/schema";
 import { OnSerialize } from "@tsed/json-mapper";
 import { StatusPedido } from "@pedido/entities";
-import { StatusPedidoEnumMapper } from "@pedido/types";
+import { STATUS_PEDIDO, StatusPedidoEnumMapper } from "@pedido/types";
 import { PedidoDto, PedidoItemDto } from "@pedido/dtos/PedidoDto";
 
-export class PedidoItemConsultaDto {
+export class PedidoItemRetornoDto {
     @Description("Identificador")
     @Example("123456")
     @Property()
@@ -31,7 +31,7 @@ export class PedidoItemConsultaDto {
     public produtoId?: number
 }
 
-export class PedidoConsultaDto {
+export class PedidoRetornoDto {
     @Description("Identificador")
     @Example("123456")
     @Property()
@@ -49,31 +49,25 @@ export class PedidoConsultaDto {
 
     @Description("Categoria")
     @Example("RECEBIDO")
-    @Enum("RECEBIDO", "AGUARDANDO_CONFIRMACAO_PAGAMENTO", "PAGO", "EM_PREPARACAO", "PRONTO", "FINALIZADO", "PAGAMENTO_INVALIDO")
+    @Enum(STATUS_PEDIDO)
     @OnSerialize((c: StatusPedido) => StatusPedidoEnumMapper.enumParaString(c))
     public readonly status?: StatusPedido;
 
     @Description("Itens do Pedido")
-    @CollectionOf(PedidoItemConsultaDto)
-    public readonly itens: PedidoItemConsultaDto[];
+    @CollectionOf(PedidoItemRetornoDto)
+    public readonly itens: PedidoItemRetornoDto[];
 
-    @Description("QrCode do Mercado Pago")
-    @Example("00020101021243650016COM.MERCADOLIBRE02013063638f1192a-5fd1-4180-a180-8bcae3556bc35204000053039865802BR5925IZABEL AAAA DE MELO6007BARUERI62070503***63040B6D")
-    @Property()
-    public readonly qrCodeMercadoPago?: string;
-
-    static getInstance(pedido: PedidoDto): PedidoConsultaDto {
+    static getInstance(pedido: PedidoDto): PedidoRetornoDto {
         return {
             id: pedido.id,
             observacao: pedido.observacao,
             cliente: pedido.cliente,
             status: pedido.status,
-            itens: pedido.itens?.map(i => PedidoConsultaDto.getItemInstance(i)),
-            qrCodeMercadoPago: pedido.qrDataMercadoPago
-        } as PedidoConsultaDto;
+            itens: pedido.itens?.map(i => PedidoRetornoDto.getItemInstance(i)),
+        } as PedidoRetornoDto;
     }
 
-    private static getItemInstance(item: PedidoItemDto): PedidoItemConsultaDto {
+    private static getItemInstance(item: PedidoItemDto): PedidoItemRetornoDto {
         return {
             id: item.id,
             produtoId: item.produto?.id,

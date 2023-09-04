@@ -17,17 +17,13 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
         this.pagamentoRepository = this.dataSource.getRepository(PagamentoModel);
     }
 
-    async criar(pagamentoDto: PagamentoDto): Promise<number | undefined> {
+    async salvar(pagamentoDto: PagamentoDto): Promise<PagamentoDto> {
         try {
-            this.logger.trace("Start pagamento={}", pagamentoDto);
-
             const pagamentoEntityCreated = await this.pagamentoRepository.save(PagamentoModel.getInstancia(pagamentoDto));
-            const pagamentoEntityCreatedId = pagamentoEntityCreated.id;
+            pagamentoDto.id = pagamentoEntityCreated.id;
 
-            this.logger.trace("End pagamentoEntityCreatedId={}", pagamentoEntityCreatedId);
-            return pagamentoEntityCreatedId;
+            return pagamentoDto
         } catch (e) {
-            console.log(e);
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
@@ -35,14 +31,11 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
 
     async atualizarStatus(pagamento: PagamentoDto): Promise<void> {
         try {
-            this.logger.trace("Start pedido={}", pagamento);
             const pagamentoId = pagamento.id as number;
             await this.pagamentoRepository.update(pagamentoId, {
                 status: pagamento?.status?.toString()
             });
-            this.logger.trace("End");
         } catch (e) {
-
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
@@ -50,14 +43,11 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
 
     async atualizarCodigoPagamento(pagamento: PagamentoDto): Promise<void> {
         try {
-            this.logger.trace("Start pedido={}", pagamento);
             const pagamentoId = pagamento.id as number;
             await this.pagamentoRepository.update(pagamentoId, {
                 codigoPagamento: pagamento?.codigoPagamento?.toString()
             });
-            this.logger.trace("End");
         } catch (e) {
-
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
@@ -65,44 +55,50 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
 
     async obterPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
         try {
-            this.logger.trace("Start pagamento={}", pedidoId);
             const pagamentosEntities = await this.pagamentoRepository.findBy({ pedido: Equal(pedidoId) });
             const pagamentosDto = pagamentosEntities.map(pag => pag.getDto());
-            this.logger.trace("End obterPorPedidoId={}", pedidoId);
             return Optional.ofNullable(pagamentosDto);
         } catch (e) {
-            console.log(e);
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
     }
 
-    async obterPorPedidoIdEIdentificador(pedidoId: number, identificador: string): Promise<Optional<PagamentoDto>> {
+    async obterPorPedidoIdECodigoPagamento(pedidoId: number, identificador: string): Promise<Optional<PagamentoDto>> {
         try {
-            this.logger.trace("Start pagamento={}", pedidoId);
             const pagamentoEntity = await this.pagamentoRepository.findOneBy({
                 pedido: Equal(pedidoId),
                 codigoPagamento: identificador
             });
             const pagamentosDto = pagamentoEntity?.getDto();
-            this.logger.trace("End obterPorPedidoIdEIdentificador={}", pedidoId);
             return Optional.ofNullable(pagamentosDto);
         } catch (e) {
-            console.log(e);
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }
     }
 
-    async obterPorIdentificador(identificador: string): Promise<Optional<PagamentoDto>> {
+    async obterPorCodigoPagamento(identificador: string): Promise<Optional<PagamentoDto>> {
         try {
-            this.logger.trace("Start pagamento={}", identificador);
             const pagamentosEntities = await this.pagamentoRepository.findOneBy({ codigoPagamento: Equal(identificador) });
             const pagamentosDto = pagamentosEntities?.getDto();
-            this.logger.trace("End obterPorIdentificador={}", identificador);
             return Optional.ofNullable(pagamentosDto);
         } catch (e) {
-            console.log(e);
+            this.logger.error(e);
+            throw new ErrorToAccessDatabaseException();
+        }
+    }
+
+    async obterPorId(pagamentoId: number): Promise<Optional<PagamentoDto>> {
+        try {
+            const pagamentosEntities = await this.pagamentoRepository.findOneBy({ id: Equal(pagamentoId) });
+            if(pagamentosEntities != null) {
+                const pagamentosDto = pagamentosEntities.getDto();
+                return Optional.ofNullable(pagamentosDto);
+            }
+
+            return Optional.empty();
+        } catch (e) {
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
         }

@@ -13,7 +13,7 @@ export class PedidoModel {
     @Column({
         nullable: false
     })
-    status: string;
+    status: number;
 
     @Column({
         nullable: false
@@ -50,7 +50,7 @@ export class PedidoModel {
             this.itens = pedidoDto.itens?.map(i => new PedidoItemModel(i, this));
             const status = pedidoDto.status;
             if (status !== undefined) {
-                this.status = StatusPedidoEnumMapper.enumParaString(status);
+                this.status = StatusPedidoEnumMapper.enumParaNumber(status);
             }
 
             if (pedidoDto?.cliente) {
@@ -64,7 +64,7 @@ export class PedidoModel {
         const itens = this.itens?.map(i => i.getDto());
 
         return new PedidoDto(
-            StatusPedidoEnumMapper.stringParaEnum(this.status),
+            StatusPedidoEnumMapper.numberParaEnum(this.status),
             this.dataCadastro,
             itens,
             this.observaco,

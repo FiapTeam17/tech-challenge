@@ -3,27 +3,22 @@ import { Exception } from "@tsed/exceptions";
 
 export class StatusPedidoEnumMapper {
   
-  // static numberParaEnum(codigo?: number): StatusPedido{
-  //   switch (codigo){
-  //     case 0:
-  //       return StatusPedido.RECEBIDO;
-  //     case 1:
-  //       return StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
-  //     case 3:
-  //       return StatusPedido.EM_PREPARACAO;
-  //     case 4:
-  //       return StatusPedido.PRONTO;
-  //     case 5:
-  //       return StatusPedido.FINALIZADO;
-  //     default:
-  //       throw new Exception(500,"Status Inválido");
-  //   }
-  // }
-  //
-  // static numberParaString(codigo?: number): string {
-  //   const enumStatus = StatusPedidoEnumMapper.numberParaEnum(codigo);
-  //   return StatusPedidoEnumMapper.enumParaString(enumStatus);
-  // }
+  static numberParaEnum(codigo?: number): StatusPedido{
+    switch (codigo){
+      case 0:
+        return StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
+      case 1:
+        return StatusPedido.RECEBIDO;
+      case 2:
+        return StatusPedido.EM_PREPARACAO;
+      case 3:
+        return StatusPedido.PRONTO;
+      case 4:
+        return StatusPedido.FINALIZADO;
+      default:
+        throw new Exception(500,"Status Inválido");
+    }
+  }
   
   static stringParaEnum(opcao?: string): StatusPedido{
     switch (opcao){
@@ -60,26 +55,32 @@ export class StatusPedidoEnumMapper {
     }
   }
 
-  // static enumParaNumber(status? : StatusPedido): number{
-  //   switch (status){
-  //     case StatusPedido.RECEBIDO:
-  //       return 0;
-  //     case StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO:
-  //       return 1;
-  //     case StatusPedido.PAGO:
-  //       return 2;
-  //     case StatusPedido.EM_PREPARACAO:
-  //       return 3;
-  //     case StatusPedido.PRONTO:
-  //       return 4;
-  //     case StatusPedido.FINALIZADO:
-  //       return 5;
-  //     case StatusPedido.PAGAMENTO_INVALIDO:
-  //       return 6;
-  //
-  //     default:
-  //       throw new Exception(500,"Status Inválido");
-  //   }
-  //}
+  static enumParaNumber(status? : StatusPedido): number{
+    switch (status){
+      case StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO:
+        return 0;
+      case StatusPedido.RECEBIDO:
+        return 1;
+      case StatusPedido.EM_PREPARACAO:
+        return 2;
+      case StatusPedido.PRONTO:
+        return 3;
+      case StatusPedido.FINALIZADO:
+        return 4;
+
+      default:
+        throw new Exception(500,"Status Inválido");
+    }
+  }
+
+  static numberParaString(codigo?: number): string {
+    const enumStatus = StatusPedidoEnumMapper.numberParaEnum(codigo);
+    return StatusPedidoEnumMapper.enumParaString(enumStatus);
+  }
+
+  static stringParaNumber(codigo?: string): number {
+    const enumStatus = StatusPedidoEnumMapper.stringParaEnum(codigo);
+    return StatusPedidoEnumMapper.enumParaNumber(enumStatus);
+  }
 }
 
