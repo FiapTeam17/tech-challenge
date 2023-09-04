@@ -1,6 +1,5 @@
 import { IObterPagamentoUseCase, IPagamentoRepositoryGateway } from "@pagamento/interfaces";
 import { Logger } from "@tsed/common";
-import { Optional } from "typescript-optional";
 import { PagamentoDto } from "@pagamento/dtos";
 
 export class ObterPagamentoUseCase implements IObterPagamentoUseCase {
@@ -11,7 +10,7 @@ export class ObterPagamentoUseCase implements IObterPagamentoUseCase {
   ) {
   }
 
-  async obtemPagamentoPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
+  async obtemPagamentoPorPedidoId(pedidoId: number): Promise<PagamentoDto[]> {
     return await this.pagamentoRepositoryGateway.obterPorPedidoId(pedidoId);
   }
 }

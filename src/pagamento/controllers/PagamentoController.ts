@@ -1,12 +1,12 @@
 import { DataSource } from "typeorm";
 import { Logger } from "@tsed/logger";
-import { Optional } from "typescript-optional";
 import { PagamentoDto } from "@pagamento/dtos";
 import { StatusPagamento } from "@pagamento/types";
 import {
     IAtualizarStatusPagamentoUseCase,
     IConfirmarPagamentoUseCase,
-    IObterPagamentoUseCase, IPagamentoMpServiceHttpGateway,
+    IObterPagamentoUseCase,
+    IPagamentoMpServiceHttpGateway,
     IPagamentoRepositoryGateway
 } from "@pagamento/interfaces";
 import { PagamentoMySqlRepositoryGateway } from "@pagamento/gateways";
@@ -42,7 +42,7 @@ export class PagamentoController {
             this.atualizarStatusPedidoUseCase, this.pagamentoRepositoryGateway, this.logger);
     }
 
-    async obtemPagamentoPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
+    async obtemPagamentoPorPedidoId(pedidoId: number): Promise<PagamentoDto[]> {
         return await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedidoId);
     }
 

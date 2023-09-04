@@ -74,13 +74,13 @@ export class ObterPedidoUseCase implements IObterPedidoUseCase {
             return new PedidoPagamentoDto(idPedido, false);
         }
         const pedidoDto = pedidoOp.get();
-        const pagamentosOp = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedidoDto.id!);
-        if (pagamentosOp.isEmpty() || pagamentosOp.get().length == 0) {
+        const pagamentosDto = await this.obterPagamentoUseCase.obtemPagamentoPorPedidoId(pedidoDto.id!);
+        if (pagamentosDto == undefined || pagamentosDto.length == 0) {
             this.logger.warn("Pagamento não encontrado.");
             return new PedidoPagamentoDto(pedidoDto.id!, false);
         }
         this.logger.trace("End pedido={}", pedidoDto.id);
-        const existeAlgumPagamentoPago = pagamentosOp.get().some(x => x.status === StatusPagamento.PAGO);
+        const existeAlgumPagamentoPago = pagamentosDto.some(x => x.status === StatusPagamento.PAGO);
         return new PedidoPagamentoDto(pedidoDto.id!, existeAlgumPagamentoPago);
     }
 }

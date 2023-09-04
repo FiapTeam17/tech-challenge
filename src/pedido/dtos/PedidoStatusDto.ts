@@ -5,7 +5,7 @@ import { STATUS_PEDIDO } from "@pedido/types";
 export class PedidoStatusDto {
 
     @Description("Categoria")
-    @Example("PAGO")
+    @Example("EM_PREPARACAO")
     @Enum(STATUS_PEDIDO)
     public readonly status?: StatusPedido;
 }

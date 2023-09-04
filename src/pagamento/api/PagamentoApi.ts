@@ -1,10 +1,10 @@
 import { BodyParams, Logger } from "@tsed/common";
 import { Post, Returns } from "@tsed/schema";
 import { Controller } from "@tsed/di";
-import { ConfirmacaoPagamentoDto, ConfirmacaoPagamentoMpDto } from "@pagamento/api/json";
 import { MysqlDataSource } from "@database";
 import { PagamentoController } from "@pagamento/controllers";
 import { ErrorToAccessPagamentoServicoExternoException } from "@pagamento/usecases/exceptions";
+import { ConfirmacaoPagamentoDto, ConfirmacaoPagamentoMockMpDto, ConfirmacaoPagamentoMpDto } from "@pagamento/dtos";
 
 @Controller("")
 export class PagamentoApi {
@@ -33,7 +33,7 @@ export class PagamentoApi {
 
     @Post("/pagamentos/confirmarMockMercadoPago")
     @Returns(200)
-    async confirmarMockMercadoPago(@BodyParams() confirmacaoPagamentoMpJson: ConfirmacaoPagamentoMpDto): Promise<void> {
+    async confirmarMockMercadoPago(@BodyParams() confirmacaoPagamentoMpJson: ConfirmacaoPagamentoMockMpDto): Promise<void> {
         if (confirmacaoPagamentoMpJson.pedidoId === undefined) {
             this.logger.warn("Pedido esta vazio. pedidoId={}", confirmacaoPagamentoMpJson.pedidoId);
             throw new ErrorToAccessPagamentoServicoExternoException();

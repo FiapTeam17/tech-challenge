@@ -53,11 +53,11 @@ export class PagamentoMySqlRepositoryGateway implements IPagamentoRepositoryGate
         }
     }
 
-    async obterPorPedidoId(pedidoId: number): Promise<Optional<PagamentoDto[]>> {
+    async obterPorPedidoId(pedidoId: number): Promise<PagamentoDto[]> {
         try {
             const pagamentosEntities = await this.pagamentoRepository.findBy({ pedido: Equal(pedidoId) });
             const pagamentosDto = pagamentosEntities.map(pag => pag.getDto());
-            return Optional.ofNullable(pagamentosDto);
+            return pagamentosDto;
         } catch (e) {
             this.logger.error(e);
             throw new ErrorToAccessDatabaseException();
