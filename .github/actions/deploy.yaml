@@ -1,0 +1,30 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Build Docker image
+        run: |
+          docker build -t sgr-service:latest .
+          echo ${{ secrets.AWS_ACCESS_KEY_ID }} | docker login -u AWS --password-stdin https://190197150713.dkr.ecr.us-east-2.amazonaws.com/
+          docker tag my-node-app:latest 190197150713.dkr.ecr.us-east-2.amazonaws.com/sgr-service:latest
+          docker push 190197150713.dkr.ecr.us-east-2.amazonaws.com/sgr-service:latest
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service --cluster my-ecs-cluster --service my-ecs-service --force-new-deployment
