@@ -16,7 +16,7 @@ export const MysqlDataSource = new DataSource({
   username: process.env.DB_USERNAME || "root",
   password: process.env.DB_PASSWORD || "senha",
   database: process.env.DB_SCHEMA || "sgr_database",
-  synchronize: true
+  synchronize: false
 });
 
 registerProvider<DataSource>({
